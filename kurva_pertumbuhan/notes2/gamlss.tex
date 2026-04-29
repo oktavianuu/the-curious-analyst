@@ -1,0 +1,665 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo} % Palatino font - looks professional and warm
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs} % For beautiful tables
+\usepackage{enumitem} % For better list spacing
+\usepackage{titlesec} % To customize headings
+\usepackage{hyperref} % For clickable links
+\usepackage{filecontents} % To embed the bibliography
+\usepackage[backend=biber, style=authoryear, natbib=true]{biblatex}
+\usepackage{fancyvrb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{array}   % Dianjurkan untuk tabel
+
+%% --- Colors (Gruvbox Theme for Code) ---
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Gruvbox Dark Palette Definitions
+\definecolor{gruvbg}{HTML}{282828}      % Dark Background
+\definecolor{gruvfg}{HTML}{ebdbb2}      % Light Text
+\definecolor{gruvred}{HTML}{cc241d}     % Red
+\definecolor{gruvgreen}{HTML}{98971a}   % Green
+\definecolor{gruvyellow}{HTML}{d79921}  % Yellow
+\definecolor{gruvblue}{HTML}{458588}    % Blue\\
+\definecolor{gruvpurple}{HTML}{b16286}  % Purple
+\definecolor{gruvaqua}{HTML}{689d6a}    % Aqua
+\definecolor{gruvgray}{HTML}{928374}    % Gray (comments)
+
+% Monochrome/Dark Grey for Document Headings
+\definecolor{headergrey}{HTML}{333333}
+
+% --- Code Listing Style ---
+\lstset{
+    language=R,
+    backgroundcolor=\color{gruvbg},
+    basicstyle=\ttfamily\small\color{gruvfg},
+    commentstyle=\color{gruvgray}\itshape,
+    keywordstyle=\color{gruvred}\bfseries,
+    stringstyle=\color{gruvgreen},
+    identifierstyle=\color{gruvfg},
+    numberstyle=\tiny\color{gruvgray},
+    numbers=left,
+    stepnumber=1,
+    numbersep=8pt,
+    frame=none,
+    rulecolor=\color{gruvbg},
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    captionpos=b,
+    upquote=true,
+    morekeywords={gamlss, lms, mixed, find.hyper, centiles.pred, Q.stats, wormplot, filter, mutate, select}
+}
+
+% --- Heading Styles ---
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{headergrey}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{headergrey}}{\thesubsection}{1em}{}
+
+
+% --- Title Information ---
+\title{\textbf{WHO-Style Growth Centile Curves using GAMLSS}\\ \large A Journal-Ready Workflow for Ages 12--18}
+\author{Your Name} % REPLACE WITH YOUR ACTUAL NAME
+\date{\today}
+
+% --- Document Start ---
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent This document outlines a comprehensive, practical workflow for fitting growth centile curves (specifically for ages 12--18). It adheres to the LMS/BCPE methodology used by the WHO and modern \texttt{gamlss} practices. The goal is to produce robust, publication-quality standards with correct diagnostics and reporting.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Strategi}
+Untuk usia 12--18, pendekatan yang direkomendasikan adalah memfit distribusi \textbf{BCPE} (Box-Cox Power Exponential). 
+\begin{itemize}
+    \item \textbf{Skala Umur:} Gunakan skala umur asli (tanpa transformasi).
+    \item \textbf{Smoothing:} Penalized splines (\texttt{pb}) untuk $\mu, \sigma, \nu$.
+    \item \textbf{Kurtosis ($\tau$):} Mulai dengan $\tau$ konstan.
+    \item \textbf{Metode Fitting:} Gunakan \texttt{method = mixed(...)} agar stabil.
+    \item \textbf{Validasi:} Periksa diagnostik (Q-stats, wormplots, GAIC) dan validasi via bootstrap atau hold-out.
+\end{itemize}
+
+\section{Persiapan \& Eksplorasi Data}
+Pastikan unitnya sama.
+
+\textbf{Analisis Plot Residual}\\
+Plot ini dirancang untuk menguji asumsi utama dari model GAMLSS (dan GAMLSS adalah salah satu kerangka kerja statistik yang canggih yang sering digunakan dalam data science untuk pemodelan non-linear).
+\begin{enumerate}
+\item Kuadran Bawah Kiri dan Kanan (Residual Quantile Plot secara Keseluruhan)
+    \begin{itemize}
+    \item Apa yang Dilihat: Ini adalah plot kuantil residu (Deviation) terhadap kuantil normal standar (Unit normal quantile).
+    \item Idealnya: Titik-titik harus mengikuti garis horizontal putus-putus yang melintasi nol. Titik-titik juga harus berada di dalam pita kepercayaan (garis putus-putus melengkung).
+    \item Temuan: Titik-titik pada plot Anda terlihat sangat dekat dengan garis nol dan sebagian besar berada di dalam pita kepercayaan.
+    \item Kesimpulan: Asumsi distribusi residu terpenuhi dengan baik. Residu terdistribusi mendekati Normal dengan baik.
+    \end{itemize}
+\item Kuadran Atas Kiri dan Kanan (Deteksi Pola Sistematis)
+    \begin{itemize}
+    \item  Ini adalah bagian plot yang memeriksa apakah ada pola sistematis yang tersembunyi, seringkali menunjukkan skew (kemiringan) atau variansi (ketidaksesuaian dispersi) dalam sisaan di berbagai bagian data.
+    \item Idealnya: wormplot tidak boleh memperlihatkan pola sistematis (seperti bentuk-S untuk skew atau bentuk-U/terbalik-U untuk variansi).
+    \item Temuan:
+        \begin{itemize}
+            \item Kuadran Kiri: Ada sedikit kecenderungan melengkung (seperti huruf S yang sangat datar) di tengah.
+            \item Kuadran Kanan: Ada sedikit kenaikan di sisi kanan, lalu penurunan.
+        \end{itemize}
+    \item Interpretasi: Pola di sini sangat minim. Jika titik-titik tetap di dalam pita, seperti yang terlihat pada plot, kita biasanya menyimpulkan bahwa tidak ada bukti kuat adanya skew atau variansi yang sistematis dan mengkhawatirkan.
+    \end{itemize}
+\item Panel Atas (Konteks Variabel Prediktor: xvar)
+    \begin{itemize}
+        \item Apa yang Dilihat: Panel ini menunjukkan pembagian data berdasarkan variabel prediktor, yaitu usia (12, 14, 16, 18 tahun). Kotak-kotak biru menunjukkan rentang data yang diwakili oleh plot residual di bawahnya, memungkinkan kita melihat apakah model cocok secara berbeda pada usia yang berbeda.
+        \item Temuan: residu telah dipecah berdasarkan usia 12–18 tahun.
+        \item Interpretasi: Jika model kurang cocok pada, misalnya, usia 16–18 tahun, kita akan melihat pola yang jelas (misalnya bentuk S atau U) di kuadran bawah kanan (yang mewakili sisaan dari kuantil usia yang lebih tinggi). Karena semua kuadran di bawah terlihat baik, ini menguatkan kesimpulan bahwa model cocok dengan baik di seluruh rentang usia (12-18 tahun).
+    \end{itemize}
+\item Kesimpng}
+library(dplyr)
+library(gamlss)
+
+\textbf{Analisis Plot Residual}\\
+Plot ini dirancang untuk menguji asumsi utama dari model GAMLSS (dan GAMLSS adalah salah satu kerangka kerja statistik yang canggih yang sering digunakan dalam data science untuk pemodelan non-linear).
+\begin{enumerate}
+\item Kuadran Bawah Kiri dan Kanan (Residual Quantile Plot secara Keseluruhan)
+    \begin{itemize}
+    \item Apa y
+\textbf{Analisis Plot Residual}
+Plot ini dirancang untuk menguji asumsi utama dari model GAMLSS (dan GAMLSS adalah salah satu kerangka kerja statistik yang canggih yang sering digunakan dalam data science untuk pemodelan non-linear).
+\begin{enumerate}
+\item Kuadran Bawah Kiri dan Kanan (Residual Quantile Plot secara Keseluruhan)
+    \begin{itemize}
+    \item Apa yang Dilihat: Ini adalah plot kuantil residu (Deviation) terhadap kuantil normal standar (Unit normal quantile).
+    \item Idealnya: Titik-titik harus mengikuti garis horizontal putus-putus yang melintasi nol. Titik-titik juga harus berada di dalam pita kepercayaan (garis putus-putus melengkung).
+    \item Temuan: Titik-titik pada plot Anda terlihat sangat dekat dengan garis nol dan sebagian besar berada di dalam pita kepercayaan.
+    \item Kesimpulan: Asumsi distribusi residu terpenuhi dengan baik. Residu terdistribusi mendekati Normal dengan baik.
+    \end{itemize}
+\item Kuadran Atas Kiri dan Kanan (Deteksi Pola Sistematis)
+    \begin{itemize}
+    \item  Ini adalah bagian plot yang memeriksa apakah ada pola sistematis yang tersembunyi, seringkali menunjukkan skew (kemiringan) atau variansi (ketidaksesuaian dispersi) dalam sisaan di berbagai bagian data.
+    \item Idealnya: wormplot tidak boleh memperlihatkan pola sistematis (seperti bentuk-S untuk skew atau bentuk-U/terbalik-U untuk variansi).
+    \item Temuan:
+        \begin{itemize}
+            \item Kuadran Kiri: Ada sedikit kecenderungan melengkung (seperti huruf S yang sangat datar) di tengah.
+            \item Kuadran Kanan: Ada sedikit kenaikan di sisi kanan, lalu penurunan.
+        \end{itemize}
+    \item Interpretasi: Pola di sini sangat minim. Jika titik-titik tetap di dalam pita, seperti yang terlihat pada plot, kita biasanya menyimpulkan bahwa tidak ada bukti kuat adanya skew atau variansi yang sistematis dan mengkhawatirkan.
+    \end{itemize}
+\item Panel Atas (Konteks Variabel Prediktor: xvar)
+    \begin{itemize}
+        \item Apa yang Dilihat: Panel ini menunjukkan pembagian data berdasarkan variabel prediktor, yaitu usia (12, 14, 16, 18 tahun). Kotak-kotak biru menunjukkan rentang data yang diwakili oleh plot residual di bawahnya, memungkinkan kita melihat apakah model cocok secara berbeda pada usia yang berbeda.
+        \item Temuan: residu telah dipecah berdasarkan usia 12–18 tahun.
+        \item Interpretasi: Jika model kurang cocok pada, misalnya, usia 16–18 tahun, kita akan melihat pola yang jelas (misalnya bentuk S atau U) di kuadran bawah kanan (yang mewakili sisaan dari kuantil usia yang lebih tinggi). Karena semua kuadran di bawah terlihat baik, ini menguatkan kesimpulan bahwa model cocok dengan baik di seluruh rentang usia (12-18 tahun).
+    \end{itemize}
+\item Kesimpang Dilihat: Ini adalah plot kuantil residu (Deviation) terhadap kuantil normal standar (Unit normal quantile).
+    \item Idealnya: Titik-titik harus mengikuti garis horizontal putus-putus yang melintasi nol. Titik-titik juga harus berada di dalam pita kepercayaan (garis putus-putus melengkung).
+    \item Temuan: Titik-titik pada plot Anda terlihat sangat dekat dengan garis nol dan sebagian besar berada di dalam pita kepercayaan.
+    \item Kesimpulan: Asumsi distribusi residu terpenuhi dengan baik. Residu terdistribusi mendekati Normal dengan baik.
+    \end{itemize}
+\item Kuadran Atas Kiri dan Kanan (Deteksi Pola Sistematis)
+    \begin{itemize}
+    \item  Ini adalah bagian plot yang memeriksa apakah ada pola sistematis yang tersembunyi, seringkali menunjukkan skew (kemiringan) atau variansi (ketidaksesuaian dispersi) dalam sisaan di berbagai bagian data.
+    \item Idealnya: wormplot tidak boleh memperlihatkan pola sistematis (seperti bentuk-S untuk skew atau bentuk-U/terbalik-U untuk variansi).
+    \item Temuan:
+        \begin{itemize}
+            \item Kuadran Kiri: Ada sedikit kecenderungan melengkung (seperti huruf S yang sangat datar) di tengah.
+            \item Kuadran Kanan: Ada sedikit kenaikan di sisi kanan, lalu penurunan.
+        \end{itemize}
+    \item Interpretasi: Pola di sini sangat minim. Jika titik-titik tetap di dalam pita, seperti yang terlihat pada plot, kita biasanya menyimpulkan bahwa tidak ada bukti kuat adanya skew atau variansi yang sistematis dan mengkhawatirkan.
+    \end{itemize}
+\item Panel Atas (Konteks Variabel Prediktor: xvar)
+    \begin{itemize}
+        \item Apa yang Dilihat: Panel ini menunjukkan pembagian data berdasarkan variabel prediktor, yaitu usia (12, 14, 16, 18 tahun). Kotak-kotak biru menunjukkan rentang data yang diwakili oleh plot residual di bawahnya, memungkinkan kita melihat apakah model cocok secara berbeda pada usia yang berbeda.
+        \item Temuan: residu telah dipecah berdasarkan usia 12–18 tahun.
+        \item Interpretasi: Jika model kurang cocok pada, misalnya, usia 16–18 tahun, kita akan melihat pola yang jelas (misalnya bentuk S atau U) di kuadran bawah kanan (yang mewakili sisaan dari kuantil usia yang lebih tinggi). Karena semua kuadran di bawah terlihat baik, ini menguatkan kesimpulan bahwa model cocok dengan baik di seluruh rentang usia (12-18 tahun).
+    \end{itemize}
+\item Kesimpulan
+\end{enumerate}
+
+# Filter data valid
+male_data <- male_data %>% 
+  filter(!is.na(umur), !is.na(bb))
+
+# Periksa distribusi
+table(cut(male_data$umur, breaks = seq(12, 18, by = 0.5)))
+
+# Inspeksi visual
+plot(density(male_data$bb), main="Density of Outcome")
+plot(male_data$umur, male_data$bb, pch=20, cex=0.5, main="Raw Scatterplot")
+\end{lstlisting}
+\subsection{Distribusi Data}
+Pada pemeriksaan distribusi data, data yang dianggap baik adalah sebaran data merata di setiap kelompok. Pada data ini, berikut adalah distribusi data berat badan laki-laki usia 12-18 tahun:
+\begin{Verbatim}[frame=single]
+(12,12.5] (12.5,13] (13,13.5] (13.5,14] (14,14.5] (14.5,15] 
+    32        73        83        66        73        62 
+(15,15.5] (15.5,16] (16,16.5] (16.5,17] (17,17.5] (17.5,18] 
+    58        87        76        57        74        45 
+\end{Verbatim}
+\subsubsection{Analisis Distribusi}
+Distribusi umur tidak merata, dengan dua puncak besar (sekitar usia 13–13.5 dan 15.5–16 tahun) dan frekuensi menurun pada usia paling muda (12 tahun) dan paling tua (17.5–18 tahun).
+
+\subsubsection{Implikasi Statistik}
+Distribusi umur yang tidak merata menyebabkan:
+\begin{itemize}
+    \item Model LMS/GAMLSS harus menggunakan smoothing (pb(), cs(), ds()), agar tidak dipengaruhi interval yang kecil atau besar.
+    \item Interval dengan jumlah kecil (mis. 12–12.5 dan 17.5–18.0) berpotensi membuat varians di ujung (tail) lebih sensitif.
+    \item Pola ini umum pada data antropometri sekolah dan tidak mengganggu model LMS/GAMLSS, selama smoothing dan pemilihan distribusi tepat.
+\end{itemize}
+
+\subsubsection{Plot Density}
+\begin{figure}[H]
+    \centering
+        \includeg
+
+\textbf{Analisis Plot Residual}
+Plot ini dirancang untuk menguji asumsi utama dari model GAMLSS (dan GAMLSS adalah salah satu kerangka kerja statistik yang canggih yang sering digunakan dalam data science untuk pemodelan non-linear).
+\begin{enumerate}
+\item Kuadran Bawah Kiri dan Kanan (Residual Quantile Plot secara Keseluruhan)
+    \begin{itemize}
+    \item Apa yang Dilihat: Ini adalah plot kuantil residu (Deviation) terhadap kuantil normal standar (Unit normal quantile).
+    \item Idealnya: Titik-titik harus mengikuti garis horizontal putus-putus yang melintasi nol. Titik-titik juga harus berada di dalam pita kepercayaan (garis putus-putus melengkung).
+    \item Temuan: Titik-titik pada plot Anda terlihat sangat dekat dengan garis nol dan sebagian besar berada di dalam pita kepercayaan.
+    \item Kesimpulan: Asumsi distribusi residu terpenuhi dengan baik. Residu terdistribusi mendekati Normal dengan baik.
+    \end{itemize}
+\item Kuadran Atas Kiri dan Kanan (Deteksi Pola Sistematis)
+    \begin{itemize}
+    \item  Ini adalah bagian plot yang memeriksa apakah ada pola sistematis yang tersembunyi, seringkali menunjukkan skew (kemiringan) atau variansi (ketidaksesuaian dispersi) dalam sisaan di berbagai bagian data.
+    \item Idealnya: wormplot tidak boleh memperlihatkan pola sistematis (seperti bentuk-S untuk skew atau bentuk-U/terbalik-U untuk variansi).
+    \item Temuan:
+        \begin{itemize}
+            \item Kuadran Kiri: Ada sedikit kecenderungan melengkung (seperti huruf S yang sangat datar) di tengah.
+            \item Kuadran Kanan: Ada sedikit kenaikan di sisi kanan, lalu penurunan.
+        \end{itemize}
+    \item Interpretasi: Pola di sini sangat minim. Jika titik-titik tetap di dalam pita, seperti yang terlihat pada plot, kita biasanya menyimpulkan bahwa tidak ada bukti kuat adanya skew atau variansi yang sistematis dan mengkhawatirkan.
+    \end{itemize}
+\item Panel Atas (Konteks Variabel Prediktor: xvar)
+    \begin{itemize}
+        \item Apa yang Dilihat: Panel ini menunjukkan pembagian data berdasarkan variabel prediktor, yaitu usia (12, 14, 16, 18 tahun). Kotak-kotak biru menunjukkan rentang data yang diwakili oleh plot residual di bawahnya, memungkinkan kita melihat apakah model cocok secara berbeda pada usia yang berbeda.
+        \item Temuan: residu telah dipecah berdasarkan usia 12–18 tahun.
+        \item Interpretasi: Jika model kurang cocok pada, misalnya, usia 16–18 tahun, kita akan melihat pola yang jelas (misalnya bentuk S atau U) di kuadran bawah kanan (yang mewakili sisaan dari kuantil usia yang lebih tinggi). Karena semua kuadran di bawah terlihat baik, ini menguatkan kesimpulan bahwa model cocok dengan baik di seluruh rentang usia (12-18 tahun).
+    \end{itemize}
+\item Kesimpraphics[width=0.8\textwidth]{../male/bb/eksplorasi_data/density.png}
+    \caption{Plot desnsity berat badan}
+\end{figure}
+Analisis distribusi densitas berat badan (BB) remaja laki-laki (12–18 tahun) menunjukkan karakteristik yang kritis untuk pemilihan model *Generalized Additive Model for Location, Scale, and Shape* (GAMLSS).
+\begin{enumerate}
+    \item \textbf{Bentuk Distribusi: Sangat Miring ke Kanan (\textit{Right-Skewed})}
+    Distribusi menunjukkan kemiringan positif ($\text{positively skewed}$) yang kuat, yang merupakan ciri khas data berat badan dalam populasi:
+    \begin{itemize}
+        \item \textbf{Mode Mayoritas:} Puncak densitas utama (mode) terletak pada rentang $\mathbf{45-50}$ $\text{kg}$.
+        \item \textbf{Ekor Panjang (\textit{Long Tail}):} Kurva menurun cepat tetapi memiliki ekor yang memanjang signifikan hingga berat $\mathbf{>120}$ $\text{kg}$.
+    \end{itemize}
+    Secara biologis, ini wajar dan mencerminkan konsentrasi data pada berat badan normal, dengan sebagian kecil populasi berada di kategori $\text{overweight}$ atau $\text{obesitas}$.
+    
+    \item \textbf{Implikasi Kritis untuk Pemodelan GAMLSS}
+    Ketidaknormalan distribusi (terutama keruncingan dan kemiringan) menuntut penggunaan model 4-parameter yang fleksibel:
+    \centering
+    \small
+    \begin{tabular}{|l|p{8cm}|}
+    \hline
+    \textbf{Karakteristik Data} & \textbf{Pilihan Model \& Justifikasi} \\
+    \hline
+    Sangat $\text{Skewed}$ + $\text{Heavy-Tailed}$ & $\mathbf{BCPE}$ (\textit{Box-Cox Power Exponential}) lebih disarankan daripada BCCG. \\
+    \hline
+    Persyaratan & BCPE adalah model 4-parameter: \\
+    \textbf{Fleksibilitas} & $\mu$ (location), $\sigma$ (scale), $\nu$ (skewness), dan $\tau$ (kurtosis). \\
+    & Model ini mampu mengakomodasi $\text{skewness}$ dan $\text{kurtosis}$, yang krusial untuk menangani $\text{heavy tail}$. \\
+    \hline
+    \end{tabular}
+\end{enumerate}
+
+\section{Kandidat Distribusi}
+\begin{enumerate}
+    \item \textbf{BCCG (LMS):} Simple 3-parameter ($L, M, S$). Cocok digunakan apabila ekornya normal.
+    \item \textbf{BCPE:} 4-parameter (penambahan kurtosis $\tau$).
+    \item \textbf{BCT:} Alternative heavy-tailed family. Gunakan ini jika BCPE gagal.
+\end{enumerate}
+
+\section{Alur Pemodelan}
+
+\subsection{Langkah 1: Fit kandidat model}
+\begin{lstlisting}
+# BCCG (LMS) - cepat baseline
+m_bccg <- gamlss(bb ~ pb(umur), sigma.fo=~pb(umur), nu.fo=~pb(umur), family = BCCG, data=male, method = RS())
+
+# BCPE (mulai dengan tau konstan)
+m_bcpe <- gamlss(bb ~ pb(umur),
+                 sigma.fo = ~ pb(umur),
+                 nu.fo    = ~ pb(umur),
+                 tau.fo   = ~ 1, # tau konstan
+                 family = BCPE,
+                 method = mixed(2,40),
+                 data = dat)
+
+# BCT (alternatif untuk  heavy-tail)
+m_bct <- update(m_bcpe, family = BCT)
+\end{lstlisting}
+
+\subsection{Langkah 2: Fitting dengan GAMLSS}
+Gunakan \texttt{gamlss()} untuk kontrol yang lebih precise. catatan \texttt{tau.fo = ~ 1} direkomendasikan pada tahap inisiasi.
+
+\begin{lstlisting}
+m_bcpe <- gamlss(
+  bb ~ pb(umur),               # mu (median)
+  sigma.fo = ~ pb(umur),       # sigma (CV)
+  nu.fo    = ~ pb(umur),       # nu (skewness)
+  tau.fo   = ~ 1,              # tau (kurtosis) - constant start
+  family = BCPE,
+  method = mixed(2, 40),       # RS twice then CG 
+  data = male_data,
+  control = gamlss.control(n.cyc = 100)
+)
+\end{lstlisting}
+
+\subsection{Langkah 3: Bandingkan GAIC}
+\begin{lstlisting}
+GAIC(m_bccg, m_bcpe, m_bct, k=2)
+\end{lstlisting}
+Pilih GAIC paling kecil tetapi jangan abaikan Q.stats/wormplot—GAIC harus didukung diagnostik.
+
+\textbf{CATATAN: Transformasi Umur (trans.x)}
+Biasanya \textbf{NO} untuk umur 12--18. Splines (\texttt{pb}) suffice without the added instability of Box-Cox transformation on age.
+
+\section{Uji Kesesuaian Model (Goodness of Fit)}
+Beberapa uji yang harus dilakukan untuk menilai kesesuaian model adalah sebagai berikut:
+\subsection{Diagnostik Residual}
+Diagnosa residual dilakukan dengan menjalankan perintah berikut:
+    \begin{lstlisting}
+    plot(m_bcpe)
+    \end{lstlisting}
+Contoh hasil yang diharapkan:
+\begin{Verbatim}[frame=single]
+******************************************************************
+	      Summary of the Quantile Residuals
+                           mean   =  -0.000300803 
+                       variance   =  1.000119 
+               coef. of skewness  =  0.009507147 
+               coef. of kurtosis  =  2.866736 
+Filliben correlation coefficient  =  0.9992913 
+******************************************************************
+\end{Verbatim}
+
+\textbf{Analisis Summary of the Quantile Residuals}
+
+\begin{itemize}[label=$\square$]
+    \item Data source, N overall, and N per age bin.
+    \item Families considered (BCCG, BCPE, BCT).
+    \item Smoothing basis used (\texttt{pb}) and algorithm (\texttt{mixed}).
+    \item Diagnostics (Q.stats, wormplots).
+    \item Software versions (R, gamlss package version).
+\end{itemize}
+
+\begin{table}[ht]
+\centering
+\caption{Statistik Residual (Q-residuals) — Excellent Fit}
+\label{tab:residual_stats}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Statistik} & \textbf{Nilai} & \textbf{Ideal} & \textbf{Interpretasi} \\
+\midrule
+Mean          & $-0.0003$ & 0 & Sangat baik \\
+Variance      & $1.0001$  & 1 & Tepat \\
+Skewness      & $0.0095$  & 0 & Hampir simetris sempurna \\
+Kurtosis      & $2.8667$  & 3 & Normal \\
+Filliben R    & $0.99929$ & $>0.99$ & Sangat mendekati normal \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{../male/bb/eksplorasi_data/plot_residual.png}
+    \caption{Residual Quantile Plot}
+\end{figure}
+
+
+\textbf{Analisis Plot Residual}\\
+Plot ini dirancang untuk menguji asumsi utama dari model GAMLSS (dan GAMLSS adalah salah satu kerangka kerja statistik yang canggih yang sering digunakan dalam data science untuk pemodelan non-linear).
+\begin{enumerate}
+\item Kuadran Bawah Kiri dan Kanan (Residual Quantile Plot secara Keseluruhan)
+    \begin{itemize}
+    \item Apa yang Dilihat: Ini adalah plot kuantil residu (Deviation) terhadap kuantil normal standar (Unit normal quantile).
+    \item Idealnya: Titik-titik harus mengikuti garis horizontal putus-putus yang melintasi nol. Titik-titik juga harus berada di dalam pita kepercayaan (garis putus-putus melengkung).
+    \item Temuan: Titik-titik pada plot Anda terlihat sangat dekat dengan garis nol dan sebagian besar berada di dalam pita kepercayaan.
+    \item Kesimpulan: Asumsi distribusi residu terpenuhi dengan baik. Residu terdistribusi mendekati Normal dengan baik.
+    \end{itemize}
+\item Kuadran Atas Kiri dan Kanan (Deteksi Pola Sistematis)
+    \begin{itemize}
+    \item  Ini adalah bagian plot yang memeriksa apakah ada pola sistematis yang tersembunyi, seringkali menunjukkan skew (kemiringan) atau variansi (ketidaksesuaian dispersi) dalam sisaan di berbagai bagian data.
+    \item Idealnya: wormplot tidak boleh memperlihatkan pola sistematis (seperti bentuk-S untuk skew atau bentuk-U/terbalik-U untuk variansi).
+    \item Temuan:
+        \begin{itemize}
+            \item Kuadran Kiri: Ada sedikit kecenderungan melengkung (seperti huruf S yang sangat datar) di tengah.
+            \item Kuadran Kanan: Ada sedikit kenaikan di sisi kanan, lalu penurunan.
+        \end{itemize}
+    \item Interpretasi: Pola di sini sangat minim. Jika titik-titik tetap di dalam pita, seperti yang terlihat pada plot, kita biasanya menyimpulkan bahwa tidak ada bukti kuat adanya skew atau variansi yang sistematis dan mengkhawatirkan.
+    \end{itemize}
+\item Panel Atas (Konteks Variabel Prediktor: xvar)
+    \begin{itemize}
+        \item Apa yang Dilihat: Panel ini menunjukkan pembagian data berdasarkan variabel prediktor, yaitu usia (12, 14, 16, 18 tahun). Kotak-kotak biru menunjukkan rentang data yang diwakili oleh plot residual di bawahnya, memungkinkan kita melihat apakah model cocok secara berbeda pada usia yang berbeda.
+        \item Temuan: residu telah dipecah berdasarkan usia 12–18 tahun.
+        \item Interpretasi: Jika model kurang cocok pada, misalnya, usia 16–18 tahun, kita akan melihat pola yang jelas (misalnya bentuk S atau U) di kuadran bawah kanan (yang mewakili sisaan dari kuantil usia yang lebih tinggi). Karena semua kuadran di bawah terlihat baik, ini menguatkan kesimpulan bahwa model cocok dengan baik di seluruh rentang usia (12-18 tahun).
+    \end{itemize}
+\item Kesimpulan Umum
+    \begin{itemize}
+    \item Model GAMLSS berat badan terhadap usia menunjukkan hasil diagnostik yang sangat baik.
+    \item Asumsi Terpenuhi: Asumsi dasar mengenai distribusi residu model (mirip uji normalitas) terpenuhi.
+    \item Kecocokan Bagus: Model berhasil menangkap hubungan antara berat badan dan usia tanpa meninggalkan pola kesalahan sistematis yang signifikan.
+    \end{itemize}
+\end{enumerate}
+\subsection{Wormplot}
+    \begin{lstlisting}
+    round(Q.stats(m_bcpe, male_data$umur), 3)
+    \end{lstlisting}
+Wormplot akan menghasilkan plot berikut:
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=1.0\textwidth]{../male/bb/eksplorasi_data/wp.png}
+    \caption{Wormplot Model}
+\end{figure}
+
+Plot ni berfungsi untuk memeriksa apakah residu model Anda (setelah memperhitungkan usia) terdistribusi secara normal dan variansinya konstan, dipecah berdasarkan rentang nilai xvar (usia 12–18 tahun).
+\begin{itemize}
+    \item Yang Dilihat: Hubungan antara Deviation (Residu) dengan Unit normal quantile.
+    \item Idealnya: Semua titik (lingkaran) harus mengikuti garis horizontal nol dan berada di dalam pita kepercayaan putus-putus.
+    \item Temuan: Di keempat kuadran, sebagian besar titik berada di dalam pita kepercayaan.
+    \item Kesimpulan: Model ini secara keseluruhan memiliki kecocokan yang baik.
+\end{itemize}
+\subsection{Q-statsitics}
+    \begin{lstlisting}
+    wormplot(m_bcpe, xvar = male_data$umur)
+    \end{lstlisting}
+Hasil yang diharapkan:
+\begin{Verbatim}[frame=single]
+                           Z1         Z2          Z3         Z4
+11.45 to 12.95    -0.07218004  0.3545208  0.31492616  0.2119712
+12.95 to 13.35     0.42064831  0.6114300 -0.53029544 -1.0448308
+13.35 to 14.05    -0.45068976  0.3913165 -0.20463824  0.7793789
+14.05 to 14.55    -1.20373421 -1.3304236  0.88120414 -1.0024660
+14.55 to 15.25     1.12131716 -0.6806963  0.17207994  0.8159330
+15.25 to 15.85     0.18688423 -0.2628433 -1.42854665 -0.2135044
+15.85 to 16.35    -0.93350256 -0.3382569  0.87917615  1.4392792
+16.35 to 16.95     0.40203507  0.1094751  1.03342129 -0.0162552
+16.95 to 17.55     0.88187676  1.3400621 -0.55958439 -0.9621932
+17.55 to 19.85    -0.29999219 -0.4984709 -0.08829439 -0.9821327
+TOTAL Q stats      5.02729130  5.1257634  5.43098716  7.4224929
+df for Q stats     6.01802875  8.4992170  7.99993133  9.0000000
+p-val for Q stats  0.54254340  0.7861368  0.71066699  0.5932201
+                  AgostinoK2   N
+11.45 to 12.95     0.1441103  93
+12.95 to 13.35     1.3728846  76
+13.35 to 14.05     0.6493084  94
+14.05 to 14.55     1.7814589  73
+14.55 to 15.25     0.6953582  79
+15.25 to 15.85     2.0863297  88
+15.85 to 16.35     2.8444754  94
+16.35 to 16.95     1.0682238  70
+16.95 to 17.55     1.2389504  83
+17.55 to 19.85     0.9723805  77
+TOTAL Q stats     12.8534801 827
+df for Q stats    16.9999313   0
+p-val for Q stats  0.7459340   0
+\end{Verbatim}
+
+\noindent
+\textbf{Fokus Utama:} P-Value untuk Q Stats (Uji Global)
+Ini adalah bagian terpenting karena memberikan kesimpulan global tentang kualitas model.
+\begin{table}[ht]
+\centering
+\caption{Hasil Uji Kesesuaian Model}
+\label{tab:goodness_of_fit}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Statistik} & \textbf{Nilai} & \textbf{Interpretasi} \\
+\midrule
+$p$-value for $Q$ stats ($Z_1$--$Z_4$) & 0.542 hingga 0.786 & Semua nilai $p$ jauh di atas ambang batas 0.05. \\
+\midrule
+$p$-value for Agostino--K2 & 0.7459 & Nilai $p$ jauh di atas ambang batas 0.05. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent
+\textbf{Fokus Kedua:} Memeriksa Nilai Z (Per Kuadran/Kuantil)
+Meskipun uji global (p-value) sudah lulus, kita perlu melihat nilai Z per baris/kuantil untuk memastikan tidak ada masalah lokal yang tersembunyi.
+    \begin{itemize}
+        \item Z1–Z4: Ini adalah nilai Z-scores standar yang menguji momen distribusi (misalnya, mean, variance, skewness, kurtosis atau Z1​ hingga Z4​ yang sering menguji kuantil berbeda).
+        \item Yang Dicari: Kita mencari nilai $∣Z∣>2 atau ∣Z∣>3$ yang menunjukkan residu ekstrem pada kelompok usia tertentu.
+        \item Temuan: Nilai Z terbesar di kuadran Z1​−Z4​ adalah ≈−1.33 (pada baris 14.05-14.55, kolom Z2​) dan ≈1.44 (pada baris 15.85-16.35, kolom Z4​).
+        \item Kesimpulan: Semua nilai Z jauh di bawah 2. Ini menegaskan bahwa residu di setiap kelompok usia (kuantil) tidak menunjukkan masalah ekstrem dan terdistribusi dengan baik secara lokal.
+    \end{itemize}
+\item Kesimpulan Umum:
+Hasil Q stats dan AgostinoK2 menunjukkan bahwa model tersebut mantap. Dengan nilai p yang tinggi (semua p>0.05), kita menyimpulkan bahwa asumsi normalitas dan independensi sisaan model telah terpenuhi. Tidak ada nilai Z-scores ekstrem yang menunjukkan kecocokan buruk pada kelompok usia tertentu
+
+\subsection{Uji Konvergen}
+    \begin{lstlisting}
+    m_bcpe$conv
+
+    # Hasil yang diharapkan adalah TRUE.
+    \end{lstlisting}
+TRUE berarti model Anda sudah converged dengan baik, sehingga parameter μ, σ, ν, dan τ yang diestimasi stabil dan dapat digunakan untuk membuat kurva pertumbuhan. Adapun arti dari m\_bcpe\$conv == TRUE adalah:
+\begin{itemize}
+\item Algoritma optimasi (Mixed + CG) berhasil menemukan solusi
+\item Tidak ada masalah numerik besar
+\item Parameter model stabil
+\item Kurva centile dari model aman digunakan
+\item Hasil wormplot \& Q-stat akan valid (karena hanya valid bila model converged)
+\end{itemize}
+
+\subsection{GAIC/AIC}
+    \begin{lstlisting}
+    GAIC(m_bcpe, m_bct, m_bccg, k=2)
+    \end{lstlisting}
+Contoh hasil:
+\begin{Verbatim}
+             df      AIC
+m_bcpe 8.983606 6483.717
+m_bccg 7.943203 6483.736
+m_bct  8.944333 6485.739
+\end{Verbatim}
+Pilih model dengan AIC terendah.
+\subsection{term.plot}
+    \begin{lstlisting}
+    term.plot(m_bcpe)
+    \end{lstlisting}
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=1.0\textwidth]{../male/bb/eksplorasi_data/term.png}
+    \caption{plot partial effect spline}
+\end{figure}
+Plot ini menunjukkan bentuk kurva rata-rata (mu) terhadap umur setelah di-smooth oleh pb(umur) dari model BCPE yang telah dibuat. Ini bukan berat badan, tetapi fungsi smooth yang menggambarkan bagaimana rata-rata berat badan berubah terhadap umur.
+\begin{itemize}
+    \item Garis merah → kurva smooth
+    \item Area abu-abu → 95\% confidence band
+    \item Sumbu y: “Partial for pb(umur)” → skala internal (bukan berta badan)
+    \item Kurva halus, tidak ada osilasi → spline bagus
+    \item Bentuk kurva masuk akal secara biologis → penting untuk growth chart
+    \item Confidence band sesuai distribusi data
+    \item Tidak ada anomali → model siap dipakai untuk centile
+\end{itemize}
+Kurva fungsi halus parameter lokasi (μ) menunjukkan pola peningkatan berat badan yang cepat pada usia 12–14 tahun, kemudian melambat pada usia 14–17 tahun, dan mencapai plateau pada usia 17–18 tahun. Pola ini konsisten dengan pertumbuhan pubertas laki-laki.
+
+\subsection{Ringkasan Uji Kesesuaian Model}
+\textbf{Wajib}
+\begin{enumerate}
+    \item Residual diagnostics (plot(model))
+    \item Wormplot (wp(model))
+    \item Q-statistics (Q.stats(model))
+    \item Convergence check
+\end{enumerate}
+\textbf{Opsional tapi sangat disarankan:}
+\begin{enumerate}
+    \item Model comparison (GAIC/AIC)
+`   \item term.plot untuk memeriksa smoothing
+\end{enumerate}
+\section{Visualisasi Advanced (ggplot2)}
+
+\subsection{Data Prediction Prep}
+Pertama-tama, prediksi centiles-nya dan ubah bentuk data menjadi long format.
+\begin{lstlisting}
+library(tidyr)
+age_grid <- data.frame(umur = seq(12, 18, length = 300))
+
+# Prediksi centiles
+cent <- centiles.pred(m_bcpe, xname="umur", xvalues=age_grid$umur, 
+                      cent=c(3, 15, 50, 85, 97), plot=FALSE)
+
+# ubah bentuk
+cent_df <- data.frame(umur=cent$x, P3=cent[["3"]], P15=cent[["15"]], 
+                      P50=cent[["50"]], P85=cent[["85"]], P97=cent[["97"]])
+cent_df_long <- pivot_longer(cent_df, cols=starts_with("P"), 
+                             names_to="Centile", values_to="Value")
+\end{lstlisting}
+
+\subsection{Style 1: Lancet/JAMA Journal}
+Fitur: Grayscale, Median (P50) tebal, huruf Times New Roman, garis horizontal.
+
+\begin{lstlisting}
+library(ggplot2)
+library(ggrepel)
+
+# 1. Warna & Tebal Garis
+centile_colors <- c(P3="grey60", P15="grey50", P50="black", P85="grey50", P97="grey60")
+cent_df_long$lw <- ifelse(cent_df_long$Centile == "P50", 1.6, 0.9)
+
+# 2. Label untuk masing-masing ujung garis 
+label_df <- cent_df_long %>% group_by(Centile) %>% slice_tail(n = 1)
+
+# 3. Plot
+ggplot(cent_df_long, aes(x=umur, y=Value, group=Centile)) +
+  geom_line(aes(color=Centile, linewidth=lw)) +
+  geom_text_repel(
+    data=label_df, aes(label=Centile),
+    nudge_x=0.2, size=5, family="Times New Roman", fontface="bold",
+    segment.color=NA, min.segment.length=0
+  ) +
+  scale_color_manual(values=centile_colors) +
+  scale_linewidth_identity() +
+  labs(title="BMI Centile Curves (12-18 Years)", x="Age (years)", y="BMI (kg/m^2)") +
+  theme_bw(base_size=14, base_family="Times New Roman") +
+  theme(
+    panel.grid.major.x=element_blank(),
+    panel.grid.minor=element_blank(),
+    panel.grid.major.y=element_line(color="grey80", size=0.4),
+    legend.position="none",
+    plot.title=element_text(face="bold", hjust=0.5, size=18),
+    panel.border=element_rect(colour="black", fill=NA, linewidth=0.8)
+  )
+\end{lstlisting}
+
+\subsection{Style 2: Perbandingan dengan referensi WHO 2007}
+Gabungkan data lokal (Solid) dengan data WHO (garis putus2).
+
+\begin{lstlisting}
+library(readr)
+
+# 1. Load & bersihkan Data WHO 
+who <- read_csv("who_bmi_boys_5_19.csv") # Assume cols: Age, P3, P15...
+who_long <- who %>%
+  filter(Age >= 12, Age <= 18) %>%
+  pivot_longer(cols=c(P3, P15, P50, P85, P97), names_to="Centile", values_to="Value") %>%
+  mutate(Source="WHO", umur=Age) # Ensure age col matches local 'umur'
+
+# 2. Siapkan Data Lokal
+local_long <- cent_df_long %>% mutate(Source="Local")
+
+# 3. Gabungkan
+combined <- bind_rows(local_long, who_long)
+combined$linetype <- ifelse(combined$Source == "WHO", "dashed", "solid")
+combined$lw <- ifelse(combined$Centile == "P50", 1.6, 0.9)
+
+# 4. Plot
+ggplot(combined, aes(x=umur, y=Value, color=Centile, linetype=linetype, linewidth=lw)) +
+  geom_line() +
+  geom_text_repel(
+    data=filter(combined, Source=="Local") %>% group_by(Centile) %>% slice_tail(n=1),
+    aes(label=Centile), nudge_x=0.2, size=5, family="Times New Roman", fontface="bold", segment.color=NA
+  ) +
+  scale_color_manual(values=centile_colors) +
+  scale_linewidth_identity() +
+  scale_linetype_identity() +
+  labs(
+    title="Local vs WHO 2007 Reference",
+    subtitle="Solid = Local | Dashed = WHO",
+    x="Age (years)", y="BMI (kg/m^2)"
+  ) +
+  theme_bw(base_size=14, base_family="Times New Roman") +
+  theme(
+    panel.grid.major.x=element_blank(),
+    panel.grid.minor=element_blank(),
+    legend.position="none",
+    plot.title=element_text(face="bold", hjust=0.5, size=18),
+    plot.subtitle=element_text(hjust=0.5)
+  )
+\end{lstlisting}
+
+\end{document}
+

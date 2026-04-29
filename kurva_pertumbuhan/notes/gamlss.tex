@@ -1,0 +1,761 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo} % Palatino font - looks professional and warm
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs} % For beautiful tables
+\usepackage{enumitem} % For better list spacing
+\usepackage{titlesec} % To customize headings
+\usepackage{listings}
+\usepackage{hyperref} % For clickable links
+\usepackage{bookmark}
+\usepackage{filecontents} % To embed the bibliography
+\usepackage[backend=biber, style=authoryear, natbib=true]{biblatex}
+\usepackage{fancyvrb}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage[bahasa]{babel}
+
+% --- Colors (Gruvbox Theme for Code) ---
+\usepackage{xcolor}
+
+% Gruvbox Dark Palette Definitions
+\definecolor{gruvbg}{HTML}{282828}      % Dark Background
+\definecolor{gruvfg}{HTML}{ebdbb2}      % Light Text
+\definecolor{gruvred}{HTML}{cc241d}     % Red
+\definecolor{gruvgreen}{HTML}{98971a}   % Green
+\definecolor{gruvyellow}{HTML}{d79921}  % Yellow
+\definecolor{gruvblue}{HTML}{458588}    % Blue
+\definecolor{gruvpurple}{HTML}{b16286}  % Purple
+\definecolor{gruvaqua}{HTML}{689d6a}    % Aqua
+\definecolor{gruvgray}{HTML}{928374}    % Gray (comments)
+
+% Monochrome/Dark Grey for Document Headings
+\definecolor{headergrey}{HTML}{333333}
+
+% --- Code Listing Style ---
+\lstset{
+    language=R,
+    backgroundcolor=\color{gruvbg},
+    basicstyle=\ttfamily\small\color{gruvfg},
+    commentstyle=\color{gruvgray}\itshape,
+    keywordstyle=\color{gruvred}\bfseries,
+    stringstyle=\color{gruvgreen},
+    identifierstyle=\color{gruvfg},
+    numberstyle=\tiny\color{gruvgray},
+    numbers=left,
+    stepnumber=1,
+    numbersep=8pt,
+    frame=none,
+    rulecolor=\color{gruvbg},
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    captionpos=b,
+    upquote=true,
+    morekeywords={gamlss, lms, mixed, find.hyper, centiles.pred, Q.stats, wormplot, filter, mutate, select, ggplot, aes, geom_line, geom_text_repel, pivot_longer, bind_rows, scale_linewidth_identity, scale_linetype_identity}
+}
+
+% --- Heading Styles ---
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{headergrey}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{headergrey}}{\thesubsection}{1em}{}
+
+% --- Bibliography Data ---
+\begin{filecontents}{references.bib}
+@article{cole1992,
+  title={Smoothing reference centile curves: the LMS method and penalized likelihood},
+  author={Cole, Timothy J and Green, Peter J},
+  journal={Statistics in medicine},
+  volume={11},
+  number={10},
+  pages={1305--1319},
+  year={1992},
+  publisher={Wiley Online Library}
+}
+@article{rigby2004,
+  title={Smooth centile curves for skew and kurtotic data modelled using the Box--Cox power exponential distribution},
+  author={Rigby, Robert A and Stasinopoulos, D Mikis},
+  journal={Statistics in medicine},
+  volume={23},
+  number={19},
+  pages={3053--3075},
+  year={2004},
+  publisher={Wiley Online Library}
+}
+@book{who2007,
+  title={Growth reference data for 5--19 years},
+  author={{World Health Organization}},
+  year={2007},
+  publisher={World Health Organization},
+  address={Geneva}
+}
+@article{cole2020,
+    title={Sample size and validity of reference centile curves},
+    author={Cole, Timothy J},
+    journal={Statistics in Medicine},
+    year={2020}
+}
+\end{filecontents}
+\addbibresource{references.bib}
+
+% --- Title Information ---\title{\textbf{WHO-Style Growth Centile Curves using GAMLSS}\\ \large A Journal-Ready Workflow for Ages 12--18}
+\title{\textbf{PEMBUATAN KURVA PERTUMBUHAN MENGGUNAKAN GAMLSS}}
+\author{okta}
+\date{\today}
+
+% --- Document Start ---
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent 
+Dokumen ini menjelaskan alur permodelan kurva pertumbuhan (usia 12--18 tahun) menggunakan \texttt{gamlss}, mulai dari persiapan data, pembuatan model, diagnosa model, dan visualisasi kurva menggunakan \texttt{ggplot2} \& \texttt{ggrepel}.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Strategi}
+Untuk usia 12--18, pendekatan yang direkomendasikan adalah memfit distribusi \textbf{BCPE} (Box-Cox Power Exponential). 
+\begin{itemize}
+    \item \textbf{Skala Umur:} Gunakan skala umur asli (tanpa transformasi).
+    \item \textbf{Smoothing:} Penalized splines (\texttt{pb}) untuk $\mu, \sigma, \nu$.
+    \item \textbf{Kurtosis ($\tau$):} Mulai dengan $\tau$ konstan.
+    \item \textbf{Fitting Method:} Gunakan \texttt{method = mixed(...)} for stability.
+    \item \textbf{Validaasi:} Cek diagnostics (Residual, Q-stats, wormplots, GAIC) dan validasi via bootstrap or hold-out.
+\end{itemize}
+
+\section{Persiapan \& Eksplorasi Data}
+Pembersihan dan harmonisasi variabel. Pastikan semua unit setara.
+
+\begin{lstlisting}
+library(dplyr)
+library(gamlss)
+
+# Filter data valid
+male_data <- male_data %>% 
+  filter(!is.na(umur), !is.na(bb))
+
+# Cek distribusi 
+table(cut(male_data$umur, breaks = seq(12, 18, by = 0.5)))
+
+# Inspeksi Visual
+plot(density(male_data$bb), main="Density of Outcome")
+plot(male_data$umur, male_data$bb, pch=20, cex=0.5, main="Raw Scatterplot")
+\end{lstlisting}
+\noindent
+Contoh output distribusi data: 
+\begin{Verbatim}[frame=single]
+12,12.5] (12.5,13] (13,13.5] (13.5,14] (14,14.5] (14.5,15] (15,15.5] (15.5,16] 
+    32      73        83        66        73        62        58        87 
+(16,16.5] (16.5,17] (17,17.5] (17.5,18] 
+    76        57        74        45 
+\end{Verbatim}
+\subsection{Analisis Distribusi Data}
+\subsubsection{Analisis Distribusi}
+Distribusi umur tidak merata, dengan dua puncak besar (sekitar usia 13–13.5 dan 15.5–16 tahun) dan frekuensi menurun pada usia paling muda (12 tahun) dan paling tua (17.5–18 tahun).
+
+\subsubsection{Implikasi Statistik}
+Distribusi umur yang tidak merata menyebabkan:
+\begin{itemize}
+    \item Model LMS/GAMLSS harus menggunakan smoothing (pb(), cs(), ds()), agar tidak dipengaruhi interval yang kecil atau besar.
+    \item Interval dengan jumlah kecil (mis. 12–12.5 dan 17.5–18.0) berpotensi membuat varians di ujung (tail) lebih sensitif.
+    \item Pola ini umum pada data antropometri sekolah dan tidak mengganggu model LMS/GAMLSS, selama smoothing dan pemilihan distribusi tepat.
+\end{itemize}
+
+\section{Kandidat Distribusi}
+\begin{enumerate}
+    \item \textbf{BCCG (LMS):} Simple 3-parameter ($L, M, S$). Good if tails are roughly normal \citep{cole1992}.
+    \item \textbf{BCPE:} 4-parameter (penambahan kurtosis $\tau$). Best modern choice for BMI \citep{rigby2004}.
+    \item \textbf{BCT:} Alternative heavy-tailed family. Gunakan jika BCPE gagal.
+\end{enumerate}
+
+\section{Permodelan}
+\subsection{Langkah 1: Fit kandidat model}
+\begin{lstlisting}
+# BCCG (LMS) - cepat baseline
+m_bccg <- gamlss(bb ~ pb(umur), sigma.formula = ~pb(umur), nu.formula = ~pb(umur), family = BCCG, data=male, method = RS())
+
+# BCPE (mulai dengan tau konstan)
+m_bcpe <- gamlss(bb ~ pb(umur),
+                 sigma.formula = ~ pb(umur),
+                 nu.formula    = ~ pb(umur),
+                 tau.formula   = ~ 1, # tau konstan
+                 family = BCPE,
+                 method = mixed(2,40),
+                 data = male)
+                 # control = gamlss.control(n.cyc = 100) # tambahkan ini jika ada error atau warning
+# BCT (alternatif untuk  heavy-tail)
+m_bct <- update(m_bcpe, family = BCT)
+\end{lstlisting}
+
+\subsection{Langkah 2: Bandingkan Nilai GAIC}
+\begin{lstlisting}
+GAIC(m_bccg, m_bcpe, m_bct, k=2)
+\end{lstlisting}
+Pilih GAIC paling kecil tetapi jangan abaikan Q.stats/wormplot—GAIC, karena model harus didukung diagnostik yang baik.\\
+
+\noindent
+\textbf{CATATAN: Transformasi Umur (trans.x)}\\
+Biasanya \textbf{NO} untuk umur 12--18. Splines (\texttt{pb}) suffice without the added instability of Box-Cox transformation on age.
+
+\section{Uji Kesesuaian Model (Goodness of Fit)}
+Beberapa uji yang harus dilakukan untuk menilai kesesuaian model adalah sebagai berikut:
+\subsection{Uji Konvergen}
+\begin{lstlisting}
+m_bcpe$conv
+# Hasil yang diharapkan adalah TRUE.
+\end{lstlisting}
+TRUE berarti model sudah ter-converged dengan baik, sehingga parameter $\mu$, $\sigma$, $\nu$, dan $\tau$ yang diestimasi stabil dan dapat digunakan untuk membuat kurva pertumbuhan. Adapun arti dari m\_bcpe\$conv == TRUE adalah:
+\begin{itemize}
+\item Algoritma optimasi (Mixed + CG) berhasil menemukan solusi
+\item Tidak ada masalah numerik besar
+\item Parameter $\mu$, $\sigma$, $\nu$, dan $\tau$ stabil
+\item Kurva centile dari model aman digunakan
+\item Hasil wormplot \& Q-stat akan valid (karena hanya valid bila model converged)
+\end{itemize}
+\subsection{Diagnostik Residual}
+Diagnosa residual dilakukan dengan menjalankan perintah berikut:
+    \begin{lstlisting}
+    plot(m_bcpe)
+    \end{lstlisting}
+Contoh output hasil:
+\begin{Verbatim}[frame=single]
+******************************************************************
+	      Summary of the Quantile Residuals
+                           mean   =  -0.000300803
+                       variance   =  1.000119
+               coef. of skewness  =  0.009507147
+               coef. of kurtosis  =  2.866736
+Filliben correlation coefficient  =  0.9992913
+******************************************************************
+\end{Verbatim}
+
+\noindent
+\textbf{Analisis Summary of the Quantile Residuals}
+\phantomsection 
+\begin{table}[ht]
+\label{tab:residual_stats}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Statistik} & \textbf{Nilai} & \textbf{Ideal} & \textbf{Interpretasi} \\
+\midrule
+Mean          & $-0.0003$ & 0 & Sangat baik \\
+Variance      & $1.0001$  & 1 & Tepat \\
+Skewness      & $0.0095$  & 0 & Hampir simetris sempurna \\
+Kurtosis      & $2.8667$  & 3 & Normal \\
+Filliben R    & $0.99929$ & $>0.99$ & Sangat mendekati normal \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{flushleft}
+Proses ini juga menghasilkan plot residual berikut:
+\end{flushleft}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../male/bb/eksplorasi_data/plot_residual.png}
+\end{figure}
+\Floatbarrier
+
+\subsubsection{\textbf{Analisis Plot Residual}}\\
+Plot ini dirancang untuk menguji asumsi utama dari model GAMLSS (dan GAMLSS adalah salah satu kerangka kerja statistik yang canggih yang sering digunakan dalam data science untuk pemodelan non-linear).
+\begin{enumerate}
+\item Kuadran Bawah Kiri dan Kanan (Residual Quantile Plot secara Keseluruhan)
+    \begin{itemize}
+    \item Apa yang Dilihat: Ini adalah plot kuantil residu (Deviation) terhadap kuantil normal standar (Unit normal quantile).
+    \item Idealnya: Titik-titik harus mengikuti garis horizontal putus-putus yang melintasi nol. Titik-titik juga harus berada di dalam pita kepercayaan (garis putus-putus melengkung).
+    \item Temuan: Titik-titik pada plot Anda terlihat sangat dekat dengan garis nol dan sebagian besar berada di dalam pita kepercayaan.
+    \item Kesimpulan: Asumsi distribusi residu terpenuhi dengan baik. Residu terdistribusi mendekati Normal dengan baik.
+    \end{itemize}
+\item Kuadran Atas Kiri dan Kanan (Deteksi Pola Sistematis)
+    \begin{itemize}
+    \item  Ini adalah bagian plot yang memeriksa apakah ada pola sistematis yang tersembunyi, seringkali menunjukkan skew (kemiringan) atau variansi (ketidaksesuaian dispersi) dalam sisaan di berbagai bagian data.
+    \item Idealnya: wormplot tidak boleh memperlihatkan pola sistematis (seperti bentuk-S untuk skew atau bentuk-U/terbalik-U untuk variansi).
+    \item Temuan:
+        \begin{itemize}
+            \item Kuadran Kiri: Ada sedikit kecenderungan melengkung (seperti huruf S yang sangat datar) di tengah.
+            \item Kuadran Kanan: Ada sedikit kenaikan di sisi kanan, lalu penurunan.
+        \end{itemize}
+    \item Interpretasi: Pola di sini sangat minim. Jika titik-titik tetap di dalam pita, seperti yang terlihat pada plot, kita biasanya menyimpulkan bahwa tidak ada bukti kuat adanya skew atau variansi yang sistematis dan mengkhawatirkan.
+    \end{itemize}
+\item Panel Atas (Konteks Variabel Prediktor: xvar)
+    \begin{itemize}
+        \item Apa yang Dilihat: Panel ini menunjukkan pembagian data berdasarkan variabel prediktor, yaitu usia (12, 14, 16, 18 tahun). Kotak-kotak biru menunjukkan rentang data yang diwakili oleh plot residual di bawahnya, memungkinkan kita melihat apakah model cocok secara berbeda pada usia yang berbeda.
+        \item Temuan: residu telah dipecah berdasarkan usia 12–18 tahun.
+        \item Interpretasi: Jika model kurang cocok pada, misalnya, usia 16–18 tahun, kita akan melihat pola yang jelas (misalnya bentuk S atau U) di kuadran bawah kanan (yang mewakili sisaan dari kuantil usia yang lebih tinggi). Karena semua kuadran di bawah terlihat baik, ini menguatkan kesimpulan bahwa model cocok dengan baik di seluruh rentang usia (12-18 tahun).
+    \end{itemize}
+\item Kesimpulan Umum
+    \begin{itemize}
+    \item Model GAMLSS berat badan terhadap usia menunjukkan hasil diagnostik yang sangat baik.
+    \item Asumsi Terpenuhi: Asumsi dasar mengenai distribusi residu model (mirip uji normalitas) terpenuhi.
+    \item Kecocokan Bagus: Model berhasil menangkap hubungan antara berat badan dan usia tanpa meninggalkan pola kesalahan sistematis yang signifikan.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Wormplot}
+Dilakukan dengan menjalankan perintah berikut:
+    \begin{lstlisting}
+    wormplot(m_bcpe, xvar = male_data$umur)  
+    \end{lstlisting}
+Wormplot akan menghasilkan plot berikut:
+
+\begin{figure}[h!]
+    \centering
+        \includegraphics[width=0.6\textwidth]{../male/bb/eksplorasi_data/wp.png}
+\end{figure}
+\Floatbarrier
+
+\noindent
+Plot ni berfungsi untuk memeriksa apakah residu model (setelah memperhitungkan usia) terdistribusi secara normal dan variansnya konstan, dipecah berdasarkan rentang nilai xvar (usia 12–18 tahun).
+\begin{itemize}
+    \item Yang Dilihat: Hubungan antara Deviation (Residu) dengan Unit normal quantile.
+    \item Idealnya: Semua titik (lingkaran) harus mengikuti garis horizontal nol dan berada di dalam pita kepercayaan putus-putus.
+    \item Temuan: Di keempat kuadran, sebagian besar titik berada di dalam pita kepercayaan.
+    \item Kesimpulan: Model ini secara keseluruhan memiliki kecocokan yang baik.
+\end{itemize}
+
+\subsection{Q-statsitics}
+Dilakukan dengan menjalankan perintah berikut:
+\begin{lstlisting}
+ round(Q.stats(m_bcpe, male_data$umur), 3)
+\end{lstlisting}
+Contoh output:
+\begin{Verbatim}[frame=single]
+                           Z1         Z2          Z3         Z4
+11.45 to 12.95    -0.07218004  0.3545208  0.31492616  0.2119712
+12.95 to 13.35     0.42064831  0.6114300 -0.53029544 -1.0448308
+13.35 to 14.05    -0.45068976  0.3913165 -0.20463824  0.7793789
+14.05 to 14.55    -1.20373421 -1.3304236  0.88120414 -1.0024660
+14.55 to 15.25     1.12131716 -0.6806963  0.17207994  0.8159330
+15.25 to 15.85     0.18688423 -0.2628433 -1.42854665 -0.2135044
+15.85 to 16.35    -0.93350256 -0.3382569  0.87917615  1.4392792
+16.35 to 16.95     0.40203507  0.1094751  1.03342129 -0.0162552
+16.95 to 17.55     0.88187676  1.3400621 -0.55958439 -0.9621932
+17.55 to 19.85    -0.29999219 -0.4984709 -0.08829439 -0.9821327
+TOTAL Q stats      5.02729130  5.1257634  5.43098716  7.4224929
+df for Q stats     6.01802875  8.4992170  7.99993133  9.0000000
+p-val for Q stats  0.54254340  0.7861368  0.71066699  0.5932201
+                  AgostinoK2   N
+11.45 to 12.95     0.1441103  93
+12.95 to 13.35     1.3728846  76
+13.35 to 14.05     0.6493084  94
+14.05 to 14.55     1.7814589  73
+14.55 to 15.25     0.6953582  79
+15.25 to 15.85     2.0863297  88
+15.85 to 16.35     2.8444754  94
+16.35 to 16.95     1.0682238  70
+16.95 to 17.55     1.2389504  83
+17.55 to 19.85     0.9723805  77
+TOTAL Q stats     12.8534801 827
+df for Q stats    16.9999313   0
+p-val for Q stats  0.7459340   0
+\end{Verbatim}
+\noindent
+\textbf{Fokus Utama:} P-Value untuk Q Stats (Uji Global)\\
+Ini adalah bagian terpenting karena memberikan kesimpulan global tentang kualitas model. Perhatikan nilai p Z1-Z4. Pada contoh output di atas, semua nilai p untul Q statistik jauh lebih besar dari ambang batas minimum, dengan rentang 0.54 - 0.59 (>0.05). Nilai p AgostinoK2 juga juga lebih besar dari 0.05 (0.75). 
+
+\noindent
+\textbf{Fokus Kedua:} Memeriksa Nilai Z (Per Kuadran/Kuantil)\\
+Meskipun uji global (p-value) sudah lulus, kita perlu melihat nilai Z per baris/kuantil untuk memastikan tidak ada masalah lokal yang tersembunyi.
+    \begin{itemize}
+        \item Z1–Z4: Ini adalah nilai Z-scores standar yang menguji momen distribusi (misalnya, mean, variance, skewness, kurtosis atau Z1 hingga Z4 yang sering menguji kuantil berbeda).
+        \item Yang Dicari: Kita mencari nilai $∣Z∣>2$ atau $∣Z∣>3$ yang menunjukkan residu ekstrem pada kelompok usia tertentu.
+        \item Temuan: Nilai Z terbesar di kuadran  Z1–Z4 adalah $\approx-1.33$ (pada baris 14.05-14.55, kolom Z2) dan ≈1.44 (pada baris 15.85-16.35, kolom Z4).
+        \item Kesimpulan: Semua nilai Z jauh di bawah 2. Ini menegaskan bahwa residu di setiap kelompok usia (kuantil) tidak menunjukkan masalah ekstrem dan terdistribusi dengan baik secara lokal.
+    \end{itemize}
+\item Kesimpulan Umum:
+Hasil Q stats dan AgostinoK2 menunjukkan bahwa model tersebut mantap. Dengan nilai p yang tinggi (semua p>0.05), oleh karena itu kita dapat menyimpulkan bahwa asumsi normalitas dan independensi model telah terpenuhi. Tidak ada nilai Z-scores ekstrem yang menunjukkan fit yang buruk pada kelompok usia tertentu.
+
+\subsection{Uji Konvergen}
+    \begin{lstlisting}
+    m_bcpe$conv
+    # Hasil yang diharapkan adalah TRUE.
+    \end{lstlisting}
+TRUE berarti model yang diuji telah ter-converged dengan baik, sehingga parameter μ, σ, ν, dan τ yang diestimasi stabil dan dapat digunakan untuk membuat kurva pertumbuhan. Adapun arti detil dari nilai TRUE adalah:
+\begin{itemize}
+\item Algoritma optimasi (Mixed + CG) berhasil menemukan solusi
+\item Tidak ada masalah numerik besar
+\item Parameter model stabil
+\item Kurva centile dari model aman digunakan
+\item Hasil wormplot \& Q-stat akan valid (karena hanya valid bila model converged)
+\end{itemize}
+
+\subsection{GAIC/AIC}
+    \begin{lstlisting}
+    GAIC(m_bcpe, m_bct, m_bccg, k=2)
+    \end{lstlisting}
+Contoh hasil:
+\begin{Verbatim}
+             df      AIC
+m_bcpe 8.983606 6483.717
+m_bccg 7.943203 6483.736
+m_bct  8.944333 6485.739
+\end{Verbatim}
+Pilih model dengan AIC terendah.
+
+\subsection{term.plot}
+Perintah berikut digunakan untuk menghasilkan plot prediksi dari model:
+    \begin{lstlisting}
+    term.plot(m_bcpe)
+    \end{lstlisting}
+Contoh output:
+\begin{figure}[h!]
+    \centering
+        \includegraphics[width=1.0\textwidth]{../male/bb/eksplorasi_data/term.png}
+\end{figure}
+\Floatbarrier
+
+\noindent
+Plot ini menunjukkan bentuk kurva rata-rata (mu) terhadap umur setelah di-smooth oleh pb(umur) dari model BCPE yang telah dibuat. Ini bukan berat badan, tetapi fungsi smooth yang menggambarkan bagaimana rata-rata berat badan berubah terhadap umur.
+\begin{itemize}
+    \item Garis merah → kurva smooth
+    \item Area abu-abu → 95\% confidence band
+    \item Sumbu y: “Partial for pb(umur)” → skala internal (bukan berta badan)
+    \item Kurva halus, tidak ada osilasi → spline bagus
+    \item Bentuk kurva masuk akal secara biologis → penting untuk growth chart
+    \item Confidence band sesuai distribusi data
+    \item Tidak ada anomali → model siap dipakai untuk centile
+\end{itemize}
+Kurva fungsi halus parameter lokasi ($\mu$) menunjukkan pola peningkatan berat badan yang cepat pada usia 12–14 tahun, kemudian melambat pada usia 14–17 tahun, dan mencapai plateau pada usia 17–18 tahun. Pola ini konsisten dengan pertumbuhan pubertas laki-laki.
+
+\subsection{Ringkasan Uji Kesesuaian Model}
+\textbf{Wajib}
+\begin{enumerate}
+    \item Residual diagnostics (plot(model))
+    \item Wormplot (wp(model))
+    \item Q-statistics (Q.stats(model))
+    \item Convergence check
+\end{enumerate}
+\textbf{Opsional tapi sangat disarankan:}
+\begin{enumerate}
+    \item Model comparison (GAIC/AIC)
+    \item term.plot untuk memeriksa smoothing
+\end{enumerate}
+
+\section{Advanced Visualization (ggplot2)}
+
+\subsection{Data Prediction Prep}
+\begin{lstlisting}
+library(tidyr)
+# Define the Z-scores you want to predict
+Z_scores <- c(-3, -2, 0, 2, 3)
+
+# Define the smooth range of ages for the prediction lines
+sekuens_umur <- seq(from = 11.5, to = 19, by = 0.1)
+
+
+# Prediksi zscore
+zscore_pred_tb_male <- centiles.pred(
+    obj = male_tb_bcpe,          # The validated gamlss model
+    xname = "Umur",               # FIXED: Must match the model's predictor column
+    xvalues = sekuens_umur,       # FIXED: Use a smooth sequence for better lines
+    type = "standard-centiles",   # Correct type for Z-scores
+    dev = Z_scores,
+    plot = FALSE
+)
+
+# Simpan data hasil prediksi ke dalam dataframe
+tb_df_male <- as.data.frame(zscore_pred_tb_male)
+
+# Ubah format data menjadi long
+tb_df_male_long  <- tb_df_male %>%
+  pivot_longer(cols = -Umur, names_to = "Z", values_to = "Value") %>%
+  mutate(Label = Z)
+\end{lstlisting}
+
+\subsection{Pembuatan Kurva dengan ggplot2}
+\begin{lstlisting}
+library(readr)
+
+# 1. Load & bersihkan data WHO 
+who_male <- read_excel("/home/okta/Documents/data-analysis/doni/hfa-boys-z-who-2007-exp.xlsx") 
+
+# Pilih kolom yang akan digunakan dan ubah nama kolom agar konsisten
+> who_tb <- who_tb %>%
+     select(Age, SD3neg, SD2neg, SD0, SD2, SD3) %>%
+     rename(
+         'Umur' = Age,
+         'Z-3' = SD3neg,
+         'Z-2' = SD2neg,
+         'Z0' = SD0,
+         'Z2' = SD2,
+         'Z3' = SD3
+         )
+
+# Ubah format data menjadi long
+who_tb_long <- who_tb %>%
+     pivot_longer(cols = -Umur, names_to = "Z", values_to = "Value") %>%
+     mutate(Source="WHO_tb_male")
+
+# 3. gabungkan data lokal dan WHO
+tb_gabungan_male  <- bind_rows(tb_df_male_long, who_tb_long)
+
+# Tentukan jenis garis (solid untuk lokal dan garis putus2 untuk who)
+tb_gabungan_male <- ifelse(combined$Source == "WHO reference", "dashed", "solid")
+
+# 4. Plot
+ggplot() +
+    # WHO curves: dashed black
+    geom_line(
+        data = subset(tb_male_gabungan, Source == "WHO_tb_male"),
+        aes(x = Umur, y = Value, group = Z, color= Z, linetype = "WHO reference"),
+        size = 0.5
+    ) +
+    # Local curves: colored solid
+    geom_line(
+        data = subset(tb_male_gabungan, Source == "male_local_tb"),
+        aes(x = Umur, y = Value, color = Z, group = Z, linetype = "Local model"),
+        size = 0.5
+    ) +
+    # Custom X-axis
+    scale_x_continuous(
+        limits = c(min(tb_male_gabungan$Umur, na.rm = TRUE), NA),
+        breaks = seq(10, 20, by=1),
+        expand = expansion(mult = 0, add = 0)
+    ) +
+    
+    # Custom Y-axis
+    scale_y_continuous(
+        limits = c(0, 200),
+        breaks = seq(0, 200, by=10),
+        expand = expansion(mult = 0, add = 0)
+    )+
+    
+    # Manual Z-score colors for local curves
+    scale_color_manual(values = c(
+        "Z-3" = "#028df0",
+        "Z-2" = "#53850d",
+        "Z0"  = "#850d0d",
+        "Z2"  = "#53850d",
+        "Z3"  = "#028df0"
+        ),
+        guide = guide_legend(order = 2)
+    ) +
+    scale_linetype_manual(
+        limits = c("Local model", "WHO reference"),
+        values = c(
+            "Local model" = "solid",
+            "WHO reference" = "dashed"
+        ),
+        guide = guide_legend(order = 1)
+    ) +
+    # Labels and theme
+    labs(
+        x = "Umur (Tahun)",
+        y = "Tinggi Badan (cm)",
+        color = NULL  # Hides the color legend box
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+        legend.box = "horizontal",
+        legend.box.just = "left",
+        legend.spacing.x = unit(0.5, "mm"),
+        legend.position = c(0.28, 0.01),
+        legend.justification = c("center", "bottom"),
+        legend.background = element_blank(),
+        legend.box.background = element_blank(),
+        legend.spacing.y = unit(5, "mm"),
+        legend.key.width = unit(1.5, "cm"),
+        legend.key.height = unit(0.4, "cm"),
+        legend.text = element_text(size = 10),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.x = element_text(size = 10, lineheight = 0.9, colour = "black"),
+        axis.text.y = element_text(size = 10, color = "black"),
+        axis.line.x = element_line(color = "black", linewidth = 0.5),
+        axis.line.y = element_line(color = "black", linewidth = 0.5),
+        axis.ticks = element_line(color = "black", linewidth = 0.5),  # Main ticks
+        axis.ticks.length = unit(0.15, "cm"), 
+        plot.margin = margin(20, 20, 40, 20),
+        legend.title = element_blank()
+    )
+\end{lstlisting}
+
+\section{advanced strategy}
+Buat fungsi plotting:
+\begin{lstlisting}
+kurva_pertumbuhan <- function(
+        df,
+        who_source,
+        local_source,
+        ylab,
+        ylim = NULL,
+        xlab = "Umur (Tahun)",
+        xbreaks = NULL,
+        ybreaks = NULL
+) {
+    
+    if (is.null(ylim)) {
+        ylim <- range(df$Value, na.rm = TRUE)
+    }
+    
+    if (is.null(xbreaks)) {
+        xbreaks <- seq(
+            floor(min(df$Umur, na.rm = TRUE)),
+            ceiling(max(df$Umur, na.rm = TRUE)),
+            by = 1
+        )
+    }
+    
+    if (is.null(ybreaks)) {
+        ybreaks <- pretty(ylim)
+    }
+    
+    ggplot() +
+        geom_line(
+            data = df[df$Source == who_source, ],
+            aes(Umur, Value, group = Z, color = Z, linetype = "WHO reference"),
+            linewidth = 0.5
+        ) +
+        geom_line(
+            data = df[df$Source == local_source, ],
+            aes(Umur, Value, group = Z, color = Z, linetype = "Local model"),
+            linewidth = 0.5
+        ) +
+        
+        scale_x_continuous(
+            limits = c(min(df$Umur, na.rm = TRUE), NA),
+            breaks = xbreaks,
+            expand = expansion(0)
+        ) +
+        scale_y_continuous(
+            limits = ylim,
+            breaks = ybreaks,
+            expand = expansion(0)
+        ) +
+        
+        scale_color_manual(
+            values = c(
+                "Z-3" = "#028df0",
+                "Z-2" = "#53850d",
+                "Z0"  = "#850d0d",
+                "Z2"  = "#53850d",
+                "Z3"  = "#028df0"
+            ),
+            guide = guide_legend(order = 2)
+        ) +
+        scale_linetype_manual(
+            values = c(
+                "Local model" = "solid",
+                "WHO reference" = "dashed"
+            ),
+            guide = guide_legend(order = 1)
+        ) +
+        
+        labs(x = xlab, y = ylab, color = NULL) +
+        
+        theme_minimal(base_size = 11) +
+        theme(
+            legend.box = "horizontal",
+            legend.position = c(0.28, 0.01),
+            legend.justification = c("center", "bottom"),
+            legend.background = element_blank(),
+            legend.box.background = element_blank(),
+            legend.key.width = unit(1.5, "cm"),
+            legend.key.height = unit(0.4, "cm"),
+            legend.text = element_text(size = 10),
+            
+            panel.grid = element_blank(),
+            axis.line = element_line(color = "black", linewidth = 0.5),
+            axis.ticks = element_line(color = "black", linewidth = 0.5),
+            axis.ticks.length = unit(0.15, "cm"),
+            axis.text = element_text(size = 10, color = "black"),
+            plot.margin = margin(20, 20, 40, 20)
+        )
+}
+\end{lstlisting}
+Buat Panel dengan memanggil fungsi yang sudah kita buat sebelumnya:
+
+Tinggi Badan
+\begin{lstlisting}
+plot_tb_male <- plot_growth(
+  df = tb_male_gabungan,
+  who_source = "WHO_tb_male",
+  local_source = "male_local_tb",
+  ylab = "Tinggi Badan (cm)",
+  ylim = c(120, 190),
+  xbreaks = seq(10, 20, 1),
+  ybreaks = seq(120, 190, 5)
+)
+\end{lstlisting}
+
+Berat Badan:
+\begin{lstlisting}
+p_w_m <- plot_growth(
+  bb_male_gabungan,
+  "WHO_bb_male", "male_local_bb",
+  "Berat Badan (kg)", c(0, 100)
+)
+
+p_w_f <- plot_growth(
+  bb_female_gabungan,
+  "WHO_bb_female", "female_local_bb",
+  "Berat Badan (kg)", c(0, 100)
+)
+\end{lstlisting}
+
+BMI:
+\begin{lstlisting}
+p_b_m <- plot_growth(
+  bmi_male_gabungan,
+  "WHO_bmi_male", "male_local_bmi",
+  "BMI (kg/m²)", c(10, 35)
+)
+
+p_b_f <- plot_growth(
+  bmi_female_gabungan,
+  "WHO_bmi_female", "female_local_bmi",
+  "BMI (kg/m²)", c(10, 35)
+)
+\end{lstlisting}
+
+Hapus Legend sisakan satu di salah satu panel:
+\begin{lstlisting}
+library(patchwork)
+
+p_h_m <- p_h_m + theme(legend.position = "bottom")
+p_h_f <- p_h_f + theme(legend.position = "none")
+p_w_m <- p_w_m + theme(legend.position = "none")
+p_w_f <- p_w_f + theme(legend.position = "none")
+p_b_m <- p_b_m + theme(legend.position = "none")
+p_b_f <- p_b_f + theme(legend.position = "none")
+\end{lstlisting}
+
+Gabungkan plot dalam satu frame (3 x2)
+\begin{lstlisting}
+final_fig <-
+  (p_h_f | p_h_m) /
+  (p_w_f | p_w_m) /
+  (p_b_f | p_b_m) +
+  plot_layout(guides = "collect") +
+  plot_annotation(tag_levels = "A")
+\end{lstlisting}
+
+Export:
+\begin{lstlisting}
+ggsave(
+  "growth_curves_6panel.pdf",
+  final_fig,
+  width = 18,
+  height = 26,
+  units = "cm",
+  device = cairo_pdf
+)
+\end{lstlisting}
+\begin{itemize}[label=$\square$]
+
+\end{itemize}
+
+\printbibliography
+
+\end{document}

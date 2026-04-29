@@ -1,0 +1,5 @@
+[0] Config.pm:307> INFO - This is Biber 2.19
+[0] Config.pm:310> INFO - Logfile is 'gamlss.blg'
+[83] biber:340> INFO - === Mon Dec 15, 2025, 06:46:17
+[96] Utils.pm:399> ERROR - gamlss.bcf is malformed, last biblatex run probably failed. Deleted gamlss.bbl
+[96] Biber.pm:136> INFO - ERRORS: 1
