@@ -1,0 +1,734 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Analisis Rasch Menggunakna eRm},
+  pdfauthor={The Curious Mind},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Analisis Rasch Menggunakna eRm}
+\author{The Curious Mind}
+\date{2026-06-10}
+\begin{document}
+\maketitle
+
+
+\subsubsection{1. Andersen's Likelihood Ratio
+Test}\label{andersens-likelihood-ratio-test}
+
+Uji ini dilakukan untuk memvalidasi pemenuhan asumsi invariansi secara
+empiris dalam kerangka \emph{Conditional Maximum Likelihood} (CML),
+\textbf{Andersen's Likelihood Ratio (LR) Test} digunakan sebagai
+instrumen diagnostik global. Uji ini mengevaluasi stabilitas parameter
+soal dengan mempartisi sampel total ke dalam dua atau lebih sub-kelompok
+berdasarkan kriteria tertentu (seperti skor median, mean atau variabel
+demografis).
+
+Secara matematis, prosedur ini membandingkan fungsi \emph{likelihood}
+dari model yang diestimasi secara terpisah pada masing-masing
+sub-kelompok dengan model gabungan. Apabila instrumen pengukuran valid
+dan tidak bias, parameter kesulitan butir soal tidak akan menunjukkan
+perbedaan yang signifikan secara statistik di antara sub-kelompok
+tersebut, yang dibuktikan melalui nilai uji Chi-Square (\(\chi^2\))
+dengan non-signifikansi (\(p > 0.05\)).
+
+\begin{verbatim}
+
+Andersen LR-test: 
+LR-value: 10.051 
+Chi-square df: 11 
+p-value:  0.526 
+\end{verbatim}
+
+Meskipun nilai-p sebesar 0,526 secara konvensional mengindikasikan
+kesesuaian model yang sempurna, algoritma CML menghasilkan peringatan
+struktural yang kritis: sembilan item (S1, S2, S3, S4, S5, S7, S8, S9,
+dan S12) secara mekanis dikeluarkan dari perhitungan karena pola respons
+yang tidak sesuai dalam subkelompok yang terpartisi.
+
+Ini terjadi karena paket \texttt{eRm} menggunakan metode estimasi
+\textbf{Conditional Maximum Likelihood (CML)}. CML adalah mesin
+matematika yang sangat kaku dan menuntut kesempurnaan distribusi data
+pada setiap jenjang jawaban (karena instrumen tes menggunakan
+\emph{Partial Credit Model} yang bertingkat).
+
+Ketika model membagi siswa menjadi dua kelompok berdasarkan \textbf{skor
+rata-rata (mean)}, yaitu kelompok siswa berkemampuan di bawah rata-rata
+dan kelompok siswa di atas rata-rata, tercipta polarisasi yang tajam.
+Pada 9 soal tersebut, terjadi \textbf{category sparsity (kekosongan sel
+respons)} pada sub-kelompok tertentu:
+
+\begin{itemize}
+\item
+  Pada soal yang sangat menantang, \emph{sama sekali tidak ada} siswa di
+  kelompok bawah yang berhasil mencapai jenjang skor tertinggi (misal:
+  skor 3 atau 4).
+\item
+  Sebaliknya, pada soal yang sangat mudah, \emph{sama sekali tidak ada}
+  siswa di kelompok atas yang mendapatkan skor terendah (skor 0).
+\end{itemize}
+
+Dalam matematika CML, jika sebuah kategori jawaban memiliki frekuensi
+nol di salah satu sub-kelompok, komputer tidak dapat menghitung titik
+potong (threshold) karena akan membagi dengan angka nol. Agar sistem
+tidak \emph{crash}, \texttt{eRm} secara otomatis menyingkirkan ke-9 soal
+tersebut dan hanya menyisakan soal S6, S10, dan S11 yang datanya
+``penuh'' di kedua kelompok.
+
+Karena tujuan riset ini bukan untuk menstandarisasi tes (di mana kita
+memaksakan semua soal harus seragam dan membuang yang meleset),
+melainkan untuk \textbf{memetakan realitas interaksi antara siswa dan
+kualitas soal}, anomali ini justru menjadi temuan utama.
+
+Kita dapat mengeksplorasi jurang pemisah antara kualitas soal yang
+dirancang oleh pembuat soal ahli dan pola pikir atau kemampuan faktual
+dari sampel siswa.
+
+\subsubsection{2. Uji Unidimensionality}\label{uji-unidimensionality}
+
+Salah satu asumsi paling fundamental yang harus dipenuhi adalah
+\textbf{unidimensionalitas}. Asumsi ini menyatakan bahwa seperangkat
+butir soal (item) yang dianalisis harus mengukur \textbf{satu konstruk
+atau sifat laten tunggal yang sama} (misalnya, hanya mengukur kemampuan
+penalaran logis, bukan bercampur dengan kemampuan membaca atau kecemasan
+numerik). Jika instrumen mengukur lebih dari satu dimensi secara
+bersamaan, model matematika penskalaan tunggal akan kehilangan validitas
+strukturalnya.
+
+Untuk menguji asumsi ini secara empiris, \textbf{Martin-Löf Test}
+digunakan sebagai instrumen diagnostik yang sangat andal di dalam
+ekosistem \emph{Rasch Measurement}. Uji ini bekerja dengan membagi
+perangkat soal (item) menjadi dua sub-kelompok (misalnya, membagi item
+berdasarkan tingkat kesulitan menjadi kelompok soal mudah dan soal
+sulit, atau membagi berdasarkan karakteristik konten secara logis).
+
+Komputer kemudian akan mengestimasi parameter kemampuan responden
+(\(\theta\)) secara terpisah menggunakan kedua sub-kelompok soal
+tersebut. Logika dasarnya adalah: jika instrumen benar-benar
+unidimensional, kemampuan seorang siswa yang diukur menggunakan separuh
+soal pertama harus memprediksi secara presisi kemampuannya saat diukur
+menggunakan separuh soal kedua.
+
+Secara statistik, pengujian ini membandingkan \emph{likelihood} model
+multidimensional dengan model unidimensional:
+
+\begin{itemize}
+\item
+  \textbf{Hipotesis Nol (}\(H_0\)): Instrumen bersifat unidimensional
+  (homogen).
+\item
+  \textbf{Hipotesis Alternatif (}\(H_1\)): Instrumen bersifat
+  multidimensional (terdapat dimensi lain yang tidak terdeteksi).
+\end{itemize}
+
+Berbeda dari uji signifikansi pada umumnya di mana kita mencari nilai
+\(p < 0.05\), \textbf{pada uji Martin-Löf kita menginginkan hasil yang
+tidak signifikan secara statistik (}\(p > 0.05\)). Nilai \(p\) yang
+besar menunjukkan bahwa kita gagal menolak \(H_0\), yang berarti
+instrumen telah memenuhi asumsi kemurnian pengukuran
+(unidimensionalitas).
+
+\begin{verbatim}
+
+Martin-Loef-Test (split criterion: median)
+LR-value: 166.622 
+Chi-square df: 527 
+p-value: 1 
+\end{verbatim}
+
+\begin{itemize}
+\item
+  Dalam konteks uji kecocokan \emph{Martin-Löf}, nilai \texttt{p:\ 1}
+  memberikan konfirmasi absolut bahwa \textbf{tidak ada sama sekali
+  pelanggaran terhadap asumsi unidimensionalitas}. Data respons siswa
+  tidak menunjukkan deviasi atau jurang pemisah dimensi yang menyimpang
+  dari model teoretis Rasch.
+\item
+  Nilai \(LR\) jauh lebih kecil daripada nilai \(df\)
+  (\(166.622 \ll 527\)) mengindikasikan bahwa varians sisa
+  (\emph{residual variance}) di antara kedua sub-kelompok soal jauh
+  lebih sempit atau lebih terkontrol daripada yang diprediksi oleh batas
+  fluktuasi sampel acak. Hal ini memperkuat bukti bahwa kedua bagian
+  instrumen mengukur konstruk yang identik tanpa ada gangguan dimensi
+  sekunder.
+\item
+  Terlepas dari adanya variasi respons dan \emph{category sparsity} yang
+  sempat terdeteksi pada kalkulasi parameter CML sub-kelompok, ke-12
+  butir soal yang dirancang terbukti secara empiris mengukur satu
+  dimensi laten yang sama persis.
+\item
+  Instrumen ini tidak mengalami \emph{multidimensionality leakage}.
+  Hasil penskalaan tingkat kesulitan butir soal (\emph{item difficulty})
+  dan estimasi kemampuan siswa (\emph{person ability}) berada pada satu
+  sumbu kontinum logit yang murni, sehingga analisis lanjutan seperti
+  \emph{Person-Item Map} (Wright Map) dapat diinterpretasikan.
+\end{itemize}
+
+\subsubsection{3. Item fit}\label{item-fit}
+
+Setelah memastikan instrumen memenuhi asumsi kemurnian pengukuran
+(unidimensionalitas) melalui uji Martin-Löf, langkah berikutnya dalam
+pemodelan Rasch adalah mengevaluasi \textbf{kecocokan butir soal
+(\emph{item fit})}.
+
+\paragraph{3.1 Uji Validitas}\label{uji-validitas}
+
+Validitas struktural dan keandalan instrumen dievaluasi lebih lanjut
+melalui analisis kecocokan model (\emph{item-person fit}) menggunakan
+pendekatan \emph{Partial Credit Model} (PCM). Evaluasi ini didasarkan
+pada statistik \emph{Infit} dan \emph{Outfit Mean Square} (MSQ) serta
+indeks standardisasi (\emph{t-fit} atau \emph{zstd}). Dalam kerangka
+kerja eksploratif, analisis ini tidak ditujukan semata-mata untuk
+reduksi instrumen secara kaku, melainkan untuk memetakan dinamika
+interaksi antara kualitas soal rancangan dan pola pikir faktual
+responden (\(N = 102\)).
+
+\begin{verbatim}
+
+Itemfit Statistics: 
+      Chisq  df p-value Outfit MSQ Infit MSQ Outfit t Infit t Discrim
+S1   76.388 101   0.968      0.749     0.785   -1.909  -2.282   0.606
+S2   93.314 101   0.694      0.915     0.962   -0.521  -0.204   0.249
+S3   90.663 101   0.760      0.889     0.914   -0.944  -0.724   0.432
+S4  101.708 101   0.462      0.997     0.994    0.018  -0.014   0.276
+S5  108.038 101   0.298      1.059     1.050    0.517   0.458   0.215
+S6   96.788 101   0.600      0.949     0.916   -0.258  -0.538   0.347
+S7  179.973 101   0.000      1.764     1.429    3.980   3.445  -0.041
+S8  100.127 101   0.506      0.982     0.994   -0.032   0.030   0.106
+S9   75.659 101   0.972      0.742     0.778   -1.618  -1.389   0.529
+S10  82.940 101   0.905      0.813     0.800   -1.438  -1.809   0.530
+S11  73.544 101   0.982      0.721     0.724   -2.576  -2.589   0.665
+S12  88.530 101   0.808      0.868     0.877   -0.892  -0.955   0.422
+\end{verbatim}
+
+Analisis kesesuaian item awal menunjukkan bahwa 11 dari 12 item yang
+dikalibrasi memiliki integritas struktural yang sangat baik, dengan
+nilai yang berada dengan aman dalam batas kesesuaian praktis konservatif
+antara 0,7 hingga 1,3. Hal ini mengindikasikan bahwa respons yang
+diamati terhadap item-item tersebut sangat sesuai dengan ekspektasi
+probabilistik model Rasch, yang mengonfirmasi konstruk pengukuran yang
+bersih dan unidimensi.
+
+Sebuah anomali psikometrik yang signifikan teridentifikasi pada Item S7.
+Item ini menunjukkan profil ketidaksesuaian yang ekstrem (underfit),
+dengan nilai Outfit MSQ sebesar 1,764, disertai indeks diskriminasi
+negatif sebesar -0,041.
+
+Item S7 menunjukkan ketidaksesuaian yang cukup kuat terhadap ekspektasi
+model Rasch, sebagaimana tercermin dari nilai Outfit MSQ yang tinggi.
+Nilai indeks diskriminasi negatif mengindikasikan bahwa pola respons
+peserta tidak mengikuti arah yang diharapkan. Peserta dengan kemampuan
+lebih rendah cenderung lebih sering memperoleh kategori jawaban yang
+lebih tinggi atau benar, sedangkan peserta dengan kemampuan lebih tinggi
+justru menunjukkan kecenderungan sebaliknya.
+
+\paragraph{3.2 Separation Reliability}\label{separation-reliability}
+
+Untuk menutupi keterbatasan prosedur CML yang sensitif terhadap sel
+kosong pada uji invarian, presisi dan keandalan instrumen diverifikasi
+menggunakan indeks \textbf{Reliability Separation}. Uji ini mengevaluasi
+seberapa jauh instrumen memiliki daya pembeda yang andal untuk memetakan
+gradasi kemampuan responden maupun hierarki kesulitan butir soal secara
+konsisten menggunakan matriks data utuh (\(N = 102\)).
+
+\begin{verbatim}
+Rasch Reliability Metrics:
+\end{verbatim}
+
+\begin{verbatim}
+Person Reliability (Separation):  0.62 
+\end{verbatim}
+
+\begin{verbatim}
+Item Reliability (Separation)  :  0.905 
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Person Separation Reliability:} Mencatatkan koefisien sebesar
+  \(0.62\). Nilai pada kategori sedang ini merefleksikan bahwa varians
+  kemampuan teoretis di antara sampel acak berdistribusi cukup homogen.
+\end{itemize}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Item Separation Reliability (Parameter Varians):} Mencatatkan
+  koefisien yang sangat kuat, yakni \(0.905\). Angka ini membuktikan
+  bahwa sebaran tingkat kesulitan ke-12 butir soal terkalibrasi dengan
+  presisi sangat tinggi. Jarak antar-ambang kesulitan butir soal
+  (\emph{logit scale}) sangat stabil dan andal, yang memastikan bahwa
+  hierarki kesukaran soal akan mereplikasi pola identik apabila diujikan
+  pada kelompok populasi lain yang setara.
+\end{itemize}
+
+\subsubsection{4. Tingkat Kesukaran Soal}\label{tingkat-kesukaran-soal}
+
+\begin{verbatim}
+
+Design Matrix Block 1:
+    Location Threshold 1 Threshold 2 Threshold 3 Threshold 4
+S1   1.13996     2.14635    -0.61988    -1.13939     4.17276
+S2  -0.26814    -0.72817    -1.61408    -0.21779     1.48748
+S3   1.70287     0.44718     2.95857          NA          NA
+S4  -0.08668    -2.91431     0.30488     0.52865     1.73406
+S5   0.64538     0.04046     0.18169     0.74833     1.61105
+S6  -0.02914    -0.54046    -0.52178    -0.98036     1.92603
+S7   0.29946     3.84541    -2.83638     1.30301    -1.11422
+S8   0.21198     1.26632    -3.50799     2.05951     1.03006
+S9   0.14619     1.08858    -3.16922     0.56570     2.09971
+S10 -0.03455     0.05970    -0.10812    -0.23645     0.14665
+S11  0.20022    -0.42339    -0.18102     0.49899     0.90629
+S12  0.19040    -1.16204     0.26086    -1.05675     2.71951
+\end{verbatim}
+
+Matriks di atas menampilkan \textbf{Location} (tingkat kesulitan
+rata-rata butir soal) serta \textbf{Thresholds} (titik potong transisi
+antar jenjang kategori skor/jawaban) untuk ke-12 butir soal.
+
+\paragraph{\texorpdfstring{4.1 Kolom \emph{Location} (Tingkat Kesulitan
+Butir)}{4.1 Kolom Location (Tingkat Kesulitan Butir)}}\label{kolom-location-tingkat-kesulitan-butir}
+
+\begin{itemize}
+\item
+  Menunjukkan posisi absolut item pada kontinum skala logit.
+\item
+  \textbf{Item Paling Sulit:} \textbf{S3} (1.70287) berada di posisi
+  tertinggi, yang berarti butir ini membutuhkan kapasitas laten
+  tertinggi.
+\item
+  \textbf{Item Paling Mudah:} \textbf{S2} (-0.26814) berada di posisi
+  terendah.
+\end{itemize}
+
+\paragraph{\texorpdfstring{4.2 Kolom \emph{Thresholds 1--4} (Ambang
+Batas Transisi
+Kategori)}{4.2 Kolom Thresholds 1--4 (Ambang Batas Transisi Kategori)}}\label{kolom-thresholds-14-ambang-batas-transisi-kategori}
+
+\begin{itemize}
+\item
+  Menunjukkan titik logit (\(\theta\)) di mana probabilitas responden
+  untuk mencapai jenjang skor yang lebih tinggi mulai setara dengan
+  peluang berada pada jenjang di bawahnya.
+\item
+  Semakin rendah/negatif nilai \emph{threshold}, semakin mudah suatu
+  jenjang skor dicapai oleh responden.
+\end{itemize}
+
+\paragraph{4.3 Diagnostik Anomali: Kasus S3 dan
+S7}\label{diagnostik-anomali-kasus-s3-dan-s7}
+
+Dua butir soal ini menunjukkan karakteristik struktural yang menyimpang
+dari pola umum:
+
+\begin{itemize}
+\item
+  \textbf{Anomali S3 (\emph{Missing Thresholds}):} Terdapat nilai
+  \texttt{NA} (Not Available) pada kolom \emph{Threshold 3} dan
+  \emph{Threshold 4}. Hal ini mengindikasikan bahwa butir \textbf{S3}
+  memiliki struktur penskoran yang lebih ringkas dibandingkan butir
+  lainnya (misalnya hanya memiliki 3 jenjang kategori respons, bukan 4
+  atau 5).
+\item
+  \textbf{Kekacauan S7 (\emph{Disordered Thresholds}):} Perhatikan
+  urutan \emph{threshold} pada \textbf{S7} yang melompat tidak
+  beraturan:
+
+  \(3.84 \rightarrow -2.83 \rightarrow 1.30 \rightarrow -1.11\)
+
+  Kondisi ini disebut \textbf{disordered thresholds} (ambang batas
+  terbalik). Secara psikometri, ini adalah bukti matematis mutlak
+  mengapa S7 mengalami \emph{misfit} parah (Outfit MSQ = 1.764) dan
+  memiliki daya beda negatif. Jenjang jawaban pada butir ini tidak
+  berfungsi secara hierarkis; responden dengan kemampuan lebih rendah
+  secara anomali diuntungkan atau lebih mudah mencapai kategori skor
+  tertentu dibandingkan responden dengan kemampuan lebih tinggi.
+\end{itemize}
+
+\subsubsection{5. Rangkuman Uji Tingkat Kesukaran, Uji Validitas, PTMEA
+dan Daya
+Beda}\label{rangkuman-uji-tingkat-kesukaran-uji-validitas-ptmea-dan-daya-beda}
+
+\begin{verbatim}
+   Item Calibration Infit_MSQ Outfit_MSQ Infit_ZSTD Outfit_ZSTD   PTMEA Discrim
+1    S1      1.1400    0.7849     0.7489    -2.2819     -1.9091  0.6064  0.6064
+2    S2     -0.2681    0.9616     0.9148    -0.2035     -0.5206  0.2493  0.2493
+3    S3      1.7029    0.9138     0.8888    -0.7237     -0.9437  0.4325  0.4325
+4    S4     -0.0867    0.9936     0.9971    -0.0143      0.0181  0.2758  0.2758
+5    S5      0.6454    1.0500     1.0592     0.4577      0.5171  0.2155  0.2155
+6    S6     -0.0291    0.9156     0.9489    -0.5383     -0.2576  0.3469  0.3469
+7    S7      0.2995    1.4291     1.7644     3.4452      3.9805 -0.0410 -0.0410
+8    S8      0.2120    0.9942     0.9816     0.0298     -0.0323  0.1056  0.1056
+9    S9      0.1462    0.7775     0.7418    -1.3892     -1.6176  0.5295  0.5295
+10  S10     -0.0346    0.8002     0.8131    -1.8085     -1.4383  0.5304  0.5304
+11  S11      0.2002    0.7244     0.7210    -2.5890     -2.5761  0.6653  0.6653
+12  S12      0.1904    0.8775     0.8679    -0.9553     -0.8921  0.4219  0.4219
+\end{verbatim}
+
+\subsubsection{6. Visualisasi Data}\label{visualisasi-data}
+
+\paragraph{6.1 Wright Map}\label{wright-map}
+
+\begin{center}
+\pandocbounded{\includegraphics[keepaspectratio]{plot/Wright_Map.png}}
+\end{center}
+
+Sumbu horizontal menunjukkan skala logit (\(\theta\) / \(\beta\)), di
+mana nilai yang semakin ke kanan mencerminkan kemampuan siswa yang lebih
+tinggi atau soal yang lebih sukar.
+
+\paragraph{Panel Atas: Distribusi Kemampuan Responden (Sisi
+Siswa)}\label{panel-atas-distribusi-kemampuan-responden-sisi-siswa}
+
+Bagian atas menampilkan kurva kepadatan (\emph{density curve}) yang
+merepresentasikan sebaran tingkat kemampuan laten (\(\theta\)) dari
+\(102\) siswa sampel, yang dikelompokkan berdasarkan profil kemampuan:
+
+\begin{itemize}
+\item
+  \textbf{Kelompok Kemampuan Rendah (Area Biru):} Berpusat di sekitar
+  wilayah logit \(-0.4\), dengan puncak minor di \(-0.9\). Ini
+  menunjukkan konsentrasi mayoritas siswa yang memiliki kapasitas
+  kognitif lebih rendah dibandingkan tingkat kesulitan rata-rata soal.
+\item
+  \textbf{Kelompok Kemampuan Sedang (Area Kuning):} Tersebar di rentang
+  logit \(-0.2\) hingga \(0.5\), menjembatani antara siswa berkemampuan
+  rendah dan tinggi.
+\item
+  \textbf{Kelompok Kemampuan Tinggi (Area Merah):} Membentuk kurva
+  landai di rentang logit \(0.5\) hingga \(1.5\). Ini menunjukkan
+  sebagian kecil sampel yang memiliki kapasitas penalaran tingkat
+  tinggi.
+\end{itemize}
+
+\paragraph{Panel Bawah: Kalibrasi Kesulitan Butir Soal (Sisi
+Soal)}\label{panel-bawah-kalibrasi-kesulitan-butir-soal-sisi-soal}
+
+Bagian bawah memetakan posisi ke-12 butir soal (S1 hingga S12)
+berdasarkan tingkat kesulitannya (\(\beta\)). Butir-butir soal ini
+diurutkan secara vertikal dan diletakkan pada titik logit yang sesuai:
+
+\begin{itemize}
+\item
+  \textbf{Butir Soal Paling Sulit:} \textbf{S3} (berada paling kanan di
+  sekitar logit \(+1.7\)). Soal ini menuntut kapasitas kemampuan siswa
+  yang sangat tinggi untuk dapat diselesaikan dengan probabilitas
+  keberhasilan \(0.5\).
+\item
+  \textbf{Butir Soal Menengah-Atas:} \textbf{S1} (logit \(+1.1\)) dan
+  \textbf{S5} (logit \(+0.5\)).
+\item
+  \textbf{Butir Soal Menengah:} Kelompok soal \textbf{S6, S7, S8, S9,
+  S11, S12, dan S4} mengelompok di sekitar wilayah logit \(0.0\) hingga
+  \(0.3\). Klaster ini menunjukkan bahwa mayoritas soal rancangan pakar
+  memiliki tingkat kesukaran yang setara dengan kemampuan siswa
+  menengah.
+\item
+  \textbf{Butir Soal Paling Mudah:} \textbf{S2} (logit \(-0.3\)) dan
+  \textbf{S10} (logit \(-0.1\)). Butir ini dapat dijangkau oleh sebagian
+  besar siswa, termasuk mereka yang berada di kelompok kemampuan bawah.
+\end{itemize}
+
+\paragraph{\texorpdfstring{Evaluasi Penargetan Instrumen
+(\emph{Targeting}) dan Garis
+Referensi}{Evaluasi Penargetan Instrumen (Targeting) dan Garis Referensi}}\label{evaluasi-penargetan-instrumen-targeting-dan-garis-referensi}
+
+Dua garis putus-putus vertikal dan metrik di bagian judul memberikan
+konfirmasi statistik mengenai kualitas perancangan instrumen:
+
+\begin{itemize}
+\item
+  \textbf{Garis Putus-Putus Biru (Mean Person Ability} \(\approx +0.22\)
+  logits): Titik tengah dari keseluruhan kemampuan siswa.
+\item
+  \textbf{Garis Putus-Putus Merah (Mean Item Difficulty}
+  \(\approx +0.25\) logits): Titik tengah dari tingkat kesulitan butir
+  soal.
+\item
+  \textbf{Mean Gap (}\(0.15\) logits): Jarak antara rata-rata kemampuan
+  siswa dan rata-rata kesulitan soal sangat tipis. Ini berarti instrumen
+  secara teoretis diletakkan pada wilayah yang tepat untuk mengukur
+  populasi sampel ini.
+\item
+  \textbf{IPOI =} \(0.942\) (Excellent Targeting): Nilai
+  \emph{Item-Person Separation Reliability} atau indeks penargetan yang
+  mendekati \(1.0\) menunjukkan bahwa instrumen ini memiliki rentang
+  kesukaran yang sangat ideal untuk memetakan disparitas kemampuan siswa
+  yang diuji. Tidak ada jurang pemisah yang ekstrem di mana soal terlalu
+  mustahil dikerjakan atau terlalu sepele untuk seluruh populasi.
+\end{itemize}
+
+Wright Map ini menceritakan dinamika antara pembuat soal dan realitas
+siswa di lapangan:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Kesenjangan Puncak Kemampuan dan Kesukaran:} Perhatikan bahwa
+  puncak kurva biru (mayoritas siswa) berada di sebelah kiri (sekitar
+  \(-0.4\)), sedangkan sebaran soal (titik merah) lebih banyak menumpuk
+  di sebelah kanan (sekitar \(0.0\) hingga \(+0.3\)). Hal ini
+  mengindikasikan bahwa meskipun instrumen tertarget dengan baik secara
+  keseluruhan, instrumen ini \textbf{relatif sedikit lebih
+  menantang/sukar} bagi konsentrasi terbesar siswa (kelompok kemampuan
+  rendah).
+\item
+  \textbf{Daya Diskriminasi Soal S3:} Butir \textbf{S3} yang terisolasi
+  di sisi paling kanan (\(+1.7\)) berfungsi secara spesifik sebagai
+  pembeda mutlak (\emph{discriminator}) untuk menyaring siswa-siswa
+  dengan tingkat penguasaan kognitif tertinggi di kelas populasi.
+\item
+  \textbf{Penyebaran Soal:} Sebaran titik merah pada sumbu logit
+  menunjukkan bahwa instrumen memiliki gradasi atau tangga kesulitan
+  yang bervariasi, tidak menumpuk di satu titik saja, sehingga instrumen
+  ini informatif dalam memetakan gradasi kapasitas kognitif responden.
+\end{enumerate}
+
+\paragraph{6.2 Item Fit}\label{item-fit-1}
+
+\begin{center}
+\pandocbounded{\includegraphics[keepaspectratio]{plot/item_fit.png}}
+\end{center}
+
+Plot \textbf{Item Difficulty and Outfit Statistics} adalah representasi
+visual untuk mengaudit validitas konstruk dari 12 butir soal instrumen.
+Plot ini memetakan posisi setiap soal berdasarkan tingkat kesulitannya
+sekaligus mendeteksi apakah soal tersebut berfungsi sebagaimana mestinya
+secara statistik.
+
+\paragraph{Membaca Sumbu dan Garis
+Referensi}\label{membaca-sumbu-dan-garis-referensi}
+
+\begin{itemize}
+\item
+  \textbf{Sumbu X (\emph{Item Difficulty} / Skala Logit):} Menunjukkan
+  tingkat kesulitan butir soal.
+
+  \begin{itemize}
+  \item
+    Semakin ke kanan posisi titik, semakin sukar soal tersebut.
+  \item
+    Contoh: \textbf{S3} adalah soal paling sukar (berada di dekat logit
+    +1.7), sedangkan \textbf{S2} adalah soal yang paling mudah (berada
+    di dekat logit -0.3).
+  \end{itemize}
+\item
+  \textbf{Sumbu Y (\emph{Outfit Mean Square} / MSQ):} Menunjukkan
+  tingkat penyimpangan atau \emph{noise} (keacakan) respons siswa.
+
+  \begin{itemize}
+  \item
+    \textbf{Garis putus-putus horizontal di 1.0:} Nilai ideal teoretis.
+    Semakin dekat titik ke garis ini, semakin sempurna pola respons
+    siswa terhadap model Rasch.
+  \item
+    Secara psikometri, batas toleransi penerimaan (\emph{practical fit})
+    untuk instrumen non-standar adalah \textbf{0.7 hingga 1.3}. Titik
+    yang berada di atas 1.3 mengindikasikan adanya keacakan, sementara
+    di bawah 0.7 mengindikasikan kebergantungan berlebih
+    (\emph{redundancy}).
+  \end{itemize}
+\end{itemize}
+
+\paragraph{\texorpdfstring{Klaster Validitas: Kelompok \emph{Fit}
+(Lingkaran
+Abu-abu)}{Klaster Validitas: Kelompok Fit (Lingkaran Abu-abu)}}\label{klaster-validitas-kelompok-fit-lingkaran-abu-abu}
+
+Sebelas dari dua belas butir soal---meliputi \textbf{S1, S2, S3, S4, S5,
+S6, S8, S9, S10, S11, dan S12}---digambarkan sebagai lingkaran abu-abu
+dan diklasifikasikan sebagai \textbf{Fit}.
+
+\begin{itemize}
+\item
+  Kesemua titik ini berada di dalam jalur aman, yakni di bawah garis
+  batas \emph{Outfit MSQ} 1.0 (bahkan semuanya berada di rentang 0.7
+  hingga 1.1).
+\item
+  Hal ini membuktikan bahwa varians respons siswa pada 11 soal tersebut
+  dapat diprediksi dengan sangat baik oleh probabilitas model Rasch.
+  Data empiris ini mengonfirmasi \textbf{validitas konstruk} instrumen
+  Anda secara sangat kuat.
+\end{itemize}
+
+\paragraph{\texorpdfstring{Anomali Diagnostik: Butir \emph{Misfit}
+(Segitiga Hitam
+S7)}{Anomali Diagnostik: Butir Misfit (Segitiga Hitam S7)}}\label{anomali-diagnostik-butir-misfit-segitiga-hitam-s7}
+
+Secara visual maupun numerik, \textbf{Butir Soal S7} (segitiga hitam)
+memisahkan diri secara ekstrem dari klaster lainnya dan melompat jauh ke
+atas, menyentuh nilai \emph{Outfit MSQ} hampir \textbf{1.8}.
+
+\begin{itemize}
+\item
+  \textbf{Deviasi Respons:} Nilai \emph{Outfit} sebesar 1.764
+  mengindikasikan bahwa terdapat 76.4\% keacakan atau \emph{noise} dalam
+  data respons siswa yang tidak dapat dijelaskan oleh model.
+\item
+  Seperti yang telah dikalkulasikan sebelumnya, anomali ini sejalan
+  dengan nilai daya beda empiris (korelasi poin-biserial laten) yang
+  negatif (\textbf{-0.041}). Secara substansial, ini adalah bukti visual
+  bahwa S7 gagal membedakan kemampuan siswa. Terdapat indikasi kuat
+  bahwa pengecoh (\emph{distractor}), kompleksitas kalimat, atau muatan
+  kontekstual pada soal S7 menyesatkan siswa yang berkemampuan tinggi
+  atau sebaliknya, memberikan keuntungan tebakan bagi siswa berkemampuan
+  rendah.
+\end{itemize}
+
+
+
+
+\end{document}

@@ -1,0 +1,136 @@
+---
+title: "Analisis Asesmen Kognitif Menggunakan Partial Credit Model"
+format:
+  pdf:
+    documentclass: article
+    papersize: a4
+    geometry:
+      - left=4cm
+      - right=3cm
+      - top=3cm
+      - bottom=3cm
+    fontfamily: times
+    toc: true
+    number-sections: true
+lang: id
+---
+
+```{r}
+library(eRm) # digunakan untuk pemodelan rasch
+library(dplyr) 
+library(readxl) # digunakan untuk membaca file excel
+library(psych)
+library(ggplot2) # digunakan untuk membuat grafik
+library(tidyr) # digunakan untuk merapikan data
+```
+
+```{r}
+library(flextable)
+```
+
+```{r}
+data <- read_excel("baruuu.xlsx") # membaca data menggunakan fungsi readxl dan menyimpannya di dataframe data
+rasch_model_pcm <- PCM(data)
+```
+
+### Uji Invarians
+
+```{r}
+lrt_mean_split <- LRtest(rasch_model_pcm, splitcr = "mean")
+lrt_mean_split
+```
+
+### Uji Unidimensionality
+
+```{r}
+mloef_median <- MLoef(rasch_model_pcm, splitcr = "median")
+mloef_median
+```
+
+### Uji Validitas Soal
+
+```{r}
+itemfit(person.parameter(rasch_model_pcm))
+```
+
+### Person Fit
+
+```{r}
+personfit(person.parameter(rasch_model_pcm))
+```
+
+### Tingkat Kesukaran Soal
+
+```{r}
+param_threshold <- thresholds(rasch_model_pcm)
+print(param_threshold)
+```
+
+### Uji Reliabilitas Separasi
+
+```{r}
+# 1. PERSON RELIABILITY
+person_pars <- person.parameter(rasch_model_pcm)
+p_rel_obj   <- SepRel(person_pars)
+person_reliability <- p_rel_obj$sep.rel
+
+# 2. ITEM RELIABILITY
+# eRm stores item parameters in $betapar as easiness values. 
+# Multiplying by -1 turns them into difficulties.
+item_difficulties <- -1 * rasch_model_pcm$betapar
+
+# Extract the standard errors of those item parameters
+item_se <- rasch_model_pcm$se.beta
+
+# Compute item variance and mean error variance
+observed_item_var   <- var(item_difficulties)
+mean_item_error_var <- mean(item_se^2)
+
+# Rasch Item Reliability Formula: (Observed Var - Error Var) / Observed Var
+item_reliability <- (observed_item_var - mean_item_error_var) / observed_item_var
+
+# 3. PRINT RESULTS
+cat("Rasch Reliability Metrics:\n")
+cat("Person Reliability (Separation): ", round(person_reliability, 3), "\n")
+cat("Item Reliability (Separation)  : ", round(item_reliability, 3), "\n")
+```
+
+### Rangkuman Hasil Uji
+
+```{r}
+thresh_obj <- thresholds(rasch_model_pcm)
+
+df_params <- data.frame(
+  Item = rownames(thresh_obj$threshtable[[1]]),
+  Calibration = round(
+    thresh_obj$threshtable[[1]][, "Location"],
+    6
+  ),
+  stringsAsFactors = FALSE
+)
+
+fit_obj <- itemfit(person.parameter(rasch_model_pcm))
+
+df_fit <- data.frame(
+  Item = rownames(thresh_obj$threshtable[[1]]),
+  Infit_MSQ   = as.numeric(fit_obj$i.infitMSQ),
+  Outfit_MSQ  = as.numeric(fit_obj$i.outfitMSQ),
+  Infit_ZSTD  = as.numeric(fit_obj$i.infitZ),
+  Outfit_ZSTD = as.numeric(fit_obj$i.outfitZ),
+  PTMEA       = as.numeric(fit_obj$i.disc),
+  Discrim     = as.numeric(fit_obj$i.disc)
+)
+
+final_table <- data.frame(
+  Item        = df_params$Item,
+  Calibration = round(df_params$Calibration, 4),
+  Infit_MSQ   = round(df_fit$Infit_MSQ[match(df_params$Item, df_fit$Item)], 4),
+  Outfit_MSQ  = round(df_fit$Outfit_MSQ[match(df_params$Item, df_fit$Item)], 4),
+  Infit_ZSTD  = round(df_fit$Infit_ZSTD[match(df_params$Item, df_fit$Item)], 4),
+  Outfit_ZSTD = round(df_fit$Outfit_ZSTD[match(df_params$Item, df_fit$Item)], 4),
+  PTMEA       = round(df_fit$PTMEA[match(df_params$Item, df_fit$Item)], 4),
+  Discrim     = round(df_fit$PTMEA[match(df_params$Item, df_fit$Item)], 4)
+)
+
+print(final_table)
+```

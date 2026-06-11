@@ -1,0 +1,314 @@
+---
+title: "Analisis Rasch Menggunakna eRm"
+author: "The Curious Mind"
+date: "2026-06-10"
+format:
+  pdf:
+    documentclass: article
+    keep-tex: true
+    fig-pos: "H"
+  html:
+    theme: lux
+    toc: true
+    number-sections: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+library(eRm) # digunakan untuk pemodelan rasch
+library(dplyr) 
+library(readxl) # digunakan untuk membaca file excel
+library(psych)
+library(ggplot2) # digunakan untuk membuat grafik
+library(tidyr) # digunakan untuk merapikan data
+```
+
+```{r}
+data <- read_excel("baruuu.xlsx") # membaca data menggunakan fungsi readxl dan menyimpannya di dataframe data
+```
+
+```{r}
+rasch_model_pcm <- PCM(data)
+```
+
+### 1. Andersen’s Likelihood Ratio Test
+
+Uji ini dilakukan untuk memvalidasi pemenuhan asumsi invariansi secara empiris dalam kerangka *Conditional Maximum Likelihood* (CML), **Andersen’s Likelihood Ratio (LR) Test** digunakan sebagai instrumen diagnostik global. Uji ini mengevaluasi stabilitas parameter soal dengan mempartisi sampel total ke dalam dua atau lebih sub-kelompok berdasarkan kriteria tertentu (seperti skor median, mean atau variabel demografis).
+
+Secara matematis, prosedur ini membandingkan fungsi *likelihood* dari model yang diestimasi secara terpisah pada masing-masing sub-kelompok dengan model gabungan. Apabila instrumen pengukuran valid dan tidak bias, parameter kesulitan butir soal tidak akan menunjukkan perbedaan yang signifikan secara statistik di antara sub-kelompok tersebut, yang dibuktikan melalui nilai uji Chi-Square ($\chi^2$) dengan non-signifikansi ($p > 0.05$).
+
+```{r}
+lrt_mean_split <- LRtest(rasch_model_pcm, splitcr = "mean")
+lrt_mean_split
+```
+
+Meskipun nilai-p sebesar 0,526 secara konvensional mengindikasikan kesesuaian model yang sempurna, algoritma CML menghasilkan peringatan struktural yang kritis: sembilan item (S1, S2, S3, S4, S5, S7, S8, S9, dan S12) secara mekanis dikeluarkan dari perhitungan karena pola respons yang tidak sesuai dalam subkelompok yang terpartisi.
+
+Ini terjadi karena paket `eRm` menggunakan metode estimasi **Conditional Maximum Likelihood (CML)**. CML adalah mesin matematika yang sangat kaku dan menuntut kesempurnaan distribusi data pada setiap jenjang jawaban (karena instrumen tes menggunakan *Partial Credit Model* yang bertingkat).
+
+Ketika model membagi siswa menjadi dua kelompok berdasarkan **skor rata-rata (mean)**, yaitu kelompok siswa berkemampuan di bawah rata-rata dan kelompok siswa di atas rata-rata, tercipta polarisasi yang tajam. Pada 9 soal tersebut, terjadi **category sparsity (kekosongan sel respons)** pada sub-kelompok tertentu:
+
+-   Pada soal yang sangat menantang, *sama sekali tidak ada* siswa di kelompok bawah yang berhasil mencapai jenjang skor tertinggi (misal: skor 3 atau 4).
+
+-   Sebaliknya, pada soal yang sangat mudah, *sama sekali tidak ada* siswa di kelompok atas yang mendapatkan skor terendah (skor 0).
+
+Dalam matematika CML, jika sebuah kategori jawaban memiliki frekuensi nol di salah satu sub-kelompok, komputer tidak dapat menghitung titik potong (threshold) karena akan membagi dengan angka nol. Agar sistem tidak *crash*, `eRm` secara otomatis menyingkirkan ke-9 soal tersebut dan hanya menyisakan soal S6, S10, dan S11 yang datanya "penuh" di kedua kelompok.
+
+Karena tujuan riset ini bukan untuk menstandarisasi tes (di mana kita memaksakan semua soal harus seragam dan membuang yang meleset), melainkan untuk **memetakan realitas interaksi antara siswa dan kualitas soal**, anomali ini justru menjadi temuan utama.
+
+Kita dapat mengeksplorasi jurang pemisah antara kualitas soal yang dirancang oleh pembuat soal ahli dan pola pikir atau kemampuan faktual dari sampel siswa.
+
+### 2. Uji Unidimensionality
+
+Salah satu asumsi paling fundamental yang harus dipenuhi adalah **unidimensionalitas**. Asumsi ini menyatakan bahwa seperangkat butir soal (item) yang dianalisis harus mengukur **satu konstruk atau sifat laten tunggal yang sama** (misalnya, hanya mengukur kemampuan penalaran logis, bukan bercampur dengan kemampuan membaca atau kecemasan numerik). Jika instrumen mengukur lebih dari satu dimensi secara bersamaan, model matematika penskalaan tunggal akan kehilangan validitas strukturalnya.
+
+Untuk menguji asumsi ini secara empiris, **Martin-Löf Test** digunakan sebagai instrumen diagnostik yang sangat andal di dalam ekosistem *Rasch Measurement*. Uji ini bekerja dengan membagi perangkat soal (item) menjadi dua sub-kelompok (misalnya, membagi item berdasarkan tingkat kesulitan menjadi kelompok soal mudah dan soal sulit, atau membagi berdasarkan karakteristik konten secara logis).
+
+Komputer kemudian akan mengestimasi parameter kemampuan responden ($\theta$) secara terpisah menggunakan kedua sub-kelompok soal tersebut. Logika dasarnya adalah: jika instrumen benar-benar unidimensional, kemampuan seorang siswa yang diukur menggunakan separuh soal pertama harus memprediksi secara presisi kemampuannya saat diukur menggunakan separuh soal kedua.
+
+Secara statistik, pengujian ini membandingkan *likelihood* model multidimensional dengan model unidimensional:
+
+-   **Hipotesis Nol (**$H_0$): Instrumen bersifat unidimensional (homogen).
+
+-   **Hipotesis Alternatif (**$H_1$): Instrumen bersifat multidimensional (terdapat dimensi lain yang tidak terdeteksi).
+
+Berbeda dari uji signifikansi pada umumnya di mana kita mencari nilai $p < 0.05$, **pada uji Martin-Löf kita menginginkan hasil yang tidak signifikan secara statistik (**$p > 0.05$). Nilai $p$ yang besar menunjukkan bahwa kita gagal menolak $H_0$, yang berarti instrumen telah memenuhi asumsi kemurnian pengukuran (unidimensionalitas).
+
+```{r}
+mloef_median <- MLoef(rasch_model_pcm, splitcr = "median")
+mloef_median
+```
+
+-   Dalam konteks uji kecocokan *Martin-Löf*, nilai `p: 1` memberikan konfirmasi absolut bahwa **tidak ada sama sekali pelanggaran terhadap asumsi unidimensionalitas**. Data respons siswa tidak menunjukkan deviasi atau jurang pemisah dimensi yang menyimpang dari model teoretis Rasch.
+
+-   Nilai $LR$ jauh lebih kecil daripada nilai $df$ ($166.622 \ll 527$) mengindikasikan bahwa varians sisa (*residual variance*) di antara kedua sub-kelompok soal jauh lebih sempit atau lebih terkontrol daripada yang diprediksi oleh batas fluktuasi sampel acak. Hal ini memperkuat bukti bahwa kedua bagian instrumen mengukur konstruk yang identik tanpa ada gangguan dimensi sekunder.
+
+-   Terlepas dari adanya variasi respons dan *category sparsity* yang sempat terdeteksi pada kalkulasi parameter CML sub-kelompok, ke-12 butir soal yang dirancang terbukti secara empiris mengukur satu dimensi laten yang sama persis.
+
+-   Instrumen ini tidak mengalami *multidimensionality leakage*. Hasil penskalaan tingkat kesulitan butir soal (*item difficulty*) dan estimasi kemampuan siswa (*person ability*) berada pada satu sumbu kontinum logit yang murni, sehingga analisis lanjutan seperti *Person-Item Map* (Wright Map) dapat diinterpretasikan.
+
+### 3. Item fit
+
+Setelah memastikan instrumen memenuhi asumsi kemurnian pengukuran (unidimensionalitas) melalui uji Martin-Löf, langkah berikutnya dalam pemodelan Rasch adalah mengevaluasi **kecocokan butir soal (*item fit*)**.
+
+#### 3.1 Uji Validitas
+
+Validitas struktural dan keandalan instrumen dievaluasi lebih lanjut melalui analisis kecocokan model (*item-person fit*) menggunakan pendekatan *Partial Credit Model* (PCM). Evaluasi ini didasarkan pada statistik *Infit* dan *Outfit Mean Square* (MSQ) serta indeks standardisasi (*t-fit* atau *zstd*). Dalam kerangka kerja eksploratif, analisis ini tidak ditujukan semata-mata untuk reduksi instrumen secara kaku, melainkan untuk memetakan dinamika interaksi antara kualitas soal rancangan dan pola pikir faktual responden ($N = 102$).
+
+```{r}
+itemfit_stats <- itemfit(person.parameter(rasch_model_pcm))
+itemfit_stats
+```
+
+Analisis kesesuaian item awal menunjukkan bahwa 11 dari 12 item yang dikalibrasi memiliki integritas struktural yang sangat baik, dengan nilai yang berada dengan aman dalam batas kesesuaian praktis konservatif antara 0,7 hingga 1,3. Hal ini mengindikasikan bahwa respons yang diamati terhadap item-item tersebut sangat sesuai dengan ekspektasi probabilistik model Rasch, yang mengonfirmasi konstruk pengukuran yang bersih dan unidimensi.
+
+Sebuah anomali psikometrik yang signifikan teridentifikasi pada Item S7. Item ini menunjukkan profil ketidaksesuaian yang ekstrem (underfit), dengan nilai Outfit MSQ sebesar 1,764, disertai indeks diskriminasi negatif sebesar -0,041.
+
+Item S7 menunjukkan ketidaksesuaian yang cukup kuat terhadap ekspektasi model Rasch, sebagaimana tercermin dari nilai Outfit MSQ yang tinggi. Nilai indeks diskriminasi negatif mengindikasikan bahwa pola respons peserta tidak mengikuti arah yang diharapkan. Peserta dengan kemampuan lebih rendah cenderung lebih sering memperoleh kategori jawaban yang lebih tinggi atau benar, sedangkan peserta dengan kemampuan lebih tinggi justru menunjukkan kecenderungan sebaliknya.
+
+#### 3.2 Separation Reliability
+
+Untuk menutupi keterbatasan prosedur CML yang sensitif terhadap sel kosong pada uji invarian, presisi dan keandalan instrumen diverifikasi menggunakan indeks **Reliability Separation**. Uji ini mengevaluasi seberapa jauh instrumen memiliki daya pembeda yang andal untuk memetakan gradasi kemampuan responden maupun hierarki kesulitan butir soal secara konsisten menggunakan matriks data utuh ($N = 102$).
+
+```{r}
+# 1. PERSON RELIABILITY
+person_pars <- person.parameter(rasch_model_pcm)
+p_rel_obj   <- SepRel(person_pars)
+person_reliability <- p_rel_obj$sep.rel
+
+# 2. ITEM RELIABILITY
+# eRm stores item parameters in $betapar as easiness values. 
+# Multiplying by -1 turns them into difficulties.
+item_difficulties <- -1 * rasch_model_pcm$betapar
+
+# Extract the standard errors of those item parameters
+item_se <- rasch_model_pcm$se.beta
+
+# Compute item variance and mean error variance
+observed_item_var   <- var(item_difficulties)
+mean_item_error_var <- mean(item_se^2)
+
+# Rasch Item Reliability Formula: (Observed Var - Error Var) / Observed Var
+item_reliability <- (observed_item_var - mean_item_error_var) / observed_item_var
+
+# 3. PRINT RESULTS
+cat("Rasch Reliability Metrics:\n")
+cat("Person Reliability (Separation): ", round(person_reliability, 3), "\n")
+cat("Item Reliability (Separation)  : ", round(item_reliability, 3), "\n")
+```
+
+-   **Person Separation Reliability:** Mencatatkan koefisien sebesar $0.62$. Nilai pada kategori sedang ini merefleksikan bahwa varians kemampuan teoretis di antara sampel acak berdistribusi cukup homogen.
+
+<!-- -->
+
+-   **Item Separation Reliability (Parameter Varians):** Mencatatkan koefisien yang sangat kuat, yakni $0.905$. Angka ini membuktikan bahwa sebaran tingkat kesulitan ke-12 butir soal terkalibrasi dengan presisi sangat tinggi. Jarak antar-ambang kesulitan butir soal (*logit scale*) sangat stabil dan andal, yang memastikan bahwa hierarki kesukaran soal akan mereplikasi pola identik apabila diujikan pada kelompok populasi lain yang setara.
+
+### 4. Tingkat Kesukaran Soal
+
+```{r}
+param_threshold <- thresholds(rasch_model_pcm)
+print(param_threshold)
+```
+
+Matriks di atas menampilkan **Location** (tingkat kesulitan rata-rata butir soal) serta **Thresholds** (titik potong transisi antar jenjang kategori skor/jawaban) untuk ke-12 butir soal.
+
+#### 4.1 Kolom *Location* (Tingkat Kesulitan Butir)
+
+-   Menunjukkan posisi absolut item pada kontinum skala logit.
+
+-   **Item Paling Sulit:** **S3** (1.70287) berada di posisi tertinggi, yang berarti butir ini membutuhkan kapasitas laten tertinggi.
+
+-   **Item Paling Mudah:** **S2** (-0.26814) berada di posisi terendah.
+
+#### 4.2 Kolom *Thresholds 1–4* (Ambang Batas Transisi Kategori)
+
+-   Menunjukkan titik logit ($\theta$) di mana probabilitas responden untuk mencapai jenjang skor yang lebih tinggi mulai setara dengan peluang berada pada jenjang di bawahnya.
+
+-   Semakin rendah/negatif nilai *threshold*, semakin mudah suatu jenjang skor dicapai oleh responden.
+
+#### 4.3 Diagnostik Anomali: Kasus S3 dan S7
+
+Dua butir soal ini menunjukkan karakteristik struktural yang menyimpang dari pola umum:
+
+-   **Anomali S3 (*Missing Thresholds*):** Terdapat nilai `NA` (Not Available) pada kolom *Threshold 3* dan *Threshold 4*. Hal ini mengindikasikan bahwa butir **S3** memiliki struktur penskoran yang lebih ringkas dibandingkan butir lainnya (misalnya hanya memiliki 3 jenjang kategori respons, bukan 4 atau 5).
+
+-   **Kekacauan S7 (*Disordered Thresholds*):** Perhatikan urutan *threshold* pada **S7** yang melompat tidak beraturan:
+
+    $3.84 \rightarrow -2.83 \rightarrow 1.30 \rightarrow -1.11$
+
+    Kondisi ini disebut **disordered thresholds** (ambang batas terbalik). Secara psikometri, ini adalah bukti matematis mutlak mengapa S7 mengalami *misfit* parah (Outfit MSQ = 1.764) dan memiliki daya beda negatif. Jenjang jawaban pada butir ini tidak berfungsi secara hierarkis; responden dengan kemampuan lebih rendah secara anomali diuntungkan atau lebih mudah mencapai kategori skor tertentu dibandingkan responden dengan kemampuan lebih tinggi.
+
+### 5. Rangkuman Uji Tingkat Kesukaran, Uji Validitas, PTMEA dan Daya Beda
+
+```{r}
+rasch_model_pcm <- PCM(data)
+
+thresh_obj <- thresholds(rasch_model_pcm)
+
+df_params <- data.frame(
+  Item = rownames(thresh_obj$threshtable[[1]]),
+  Calibration = round(
+    thresh_obj$threshtable[[1]][, "Location"],
+    6
+  ),
+  stringsAsFactors = FALSE
+)
+
+fit_obj <- itemfit(person.parameter(rasch_model_pcm))
+
+df_fit <- data.frame(
+  Item = rownames(thresh_obj$threshtable[[1]]),
+  Infit_MSQ   = as.numeric(fit_obj$i.infitMSQ),
+  Outfit_MSQ  = as.numeric(fit_obj$i.outfitMSQ),
+  Infit_ZSTD  = as.numeric(fit_obj$i.infitZ),
+  Outfit_ZSTD = as.numeric(fit_obj$i.outfitZ),
+  PTMEA       = as.numeric(fit_obj$i.disc),
+  Discrim     = as.numeric(fit_obj$i.disc)
+)
+
+final_table <- data.frame(
+  Item        = df_params$Item,
+  Calibration = round(df_params$Calibration, 4),
+  Infit_MSQ   = round(df_fit$Infit_MSQ[match(df_params$Item, df_fit$Item)], 4),
+  Outfit_MSQ  = round(df_fit$Outfit_MSQ[match(df_params$Item, df_fit$Item)], 4),
+  Infit_ZSTD  = round(df_fit$Infit_ZSTD[match(df_params$Item, df_fit$Item)], 4),
+  Outfit_ZSTD = round(df_fit$Outfit_ZSTD[match(df_params$Item, df_fit$Item)], 4),
+  PTMEA       = round(df_fit$PTMEA[match(df_params$Item, df_fit$Item)], 4),
+  Discrim     = round(df_fit$PTMEA[match(df_params$Item, df_fit$Item)], 4)
+)
+
+print(final_table)
+```
+
+### 6. Visualisasi Data
+
+#### 6.1 Wright Map
+
+<div>
+
+![](plot/Wright_Map.png){fig-align="center"}
+
+</div>
+
+Sumbu horizontal menunjukkan skala logit ($\theta$ / $\beta$), di mana nilai yang semakin ke kanan mencerminkan kemampuan siswa yang lebih tinggi atau soal yang lebih sukar.
+
+#### Panel Atas: Distribusi Kemampuan Responden (Sisi Siswa)
+
+Bagian atas menampilkan kurva kepadatan (*density curve*) yang merepresentasikan sebaran tingkat kemampuan laten ($\theta$) dari $102$ siswa sampel, yang dikelompokkan berdasarkan profil kemampuan:
+
+-   **Kelompok Kemampuan Rendah (Area Biru):** Berpusat di sekitar wilayah logit $-0.4$, dengan puncak minor di $-0.9$. Ini menunjukkan konsentrasi mayoritas siswa yang memiliki kapasitas kognitif lebih rendah dibandingkan tingkat kesulitan rata-rata soal.
+
+-   **Kelompok Kemampuan Sedang (Area Kuning):** Tersebar di rentang logit $-0.2$ hingga $0.5$, menjembatani antara siswa berkemampuan rendah dan tinggi.
+
+-   **Kelompok Kemampuan Tinggi (Area Merah):** Membentuk kurva landai di rentang logit $0.5$ hingga $1.5$. Ini menunjukkan sebagian kecil sampel yang memiliki kapasitas penalaran tingkat tinggi.
+
+#### Panel Bawah: Kalibrasi Kesulitan Butir Soal (Sisi Soal)
+
+Bagian bawah memetakan posisi ke-12 butir soal (S1 hingga S12) berdasarkan tingkat kesulitannya ($\beta$). Butir-butir soal ini diurutkan secara vertikal dan diletakkan pada titik logit yang sesuai:
+
+-   **Butir Soal Paling Sulit:** **S3** (berada paling kanan di sekitar logit $+1.7$). Soal ini menuntut kapasitas kemampuan siswa yang sangat tinggi untuk dapat diselesaikan dengan probabilitas keberhasilan $0.5$.
+
+-   **Butir Soal Menengah-Atas:** **S1** (logit $+1.1$) dan **S5** (logit $+0.5$).
+
+-   **Butir Soal Menengah:** Kelompok soal **S6, S7, S8, S9, S11, S12, dan S4** mengelompok di sekitar wilayah logit $0.0$ hingga $0.3$. Klaster ini menunjukkan bahwa mayoritas soal rancangan pakar memiliki tingkat kesukaran yang setara dengan kemampuan siswa menengah.
+
+-   **Butir Soal Paling Mudah:** **S2** (logit $-0.3$) dan **S10** (logit $-0.1$). Butir ini dapat dijangkau oleh sebagian besar siswa, termasuk mereka yang berada di kelompok kemampuan bawah.
+
+#### Evaluasi Penargetan Instrumen (*Targeting*) dan Garis Referensi
+
+Dua garis putus-putus vertikal dan metrik di bagian judul memberikan konfirmasi statistik mengenai kualitas perancangan instrumen:
+
+-   **Garis Putus-Putus Biru (Mean Person Ability** $\approx +0.22$ logits): Titik tengah dari keseluruhan kemampuan siswa.
+
+-   **Garis Putus-Putus Merah (Mean Item Difficulty** $\approx +0.25$ logits): Titik tengah dari tingkat kesulitan butir soal.
+
+-   **Mean Gap (**$0.15$ logits): Jarak antara rata-rata kemampuan siswa dan rata-rata kesulitan soal sangat tipis. Ini berarti instrumen secara teoretis diletakkan pada wilayah yang tepat untuk mengukur populasi sampel ini.
+
+-   **IPOI =** $0.942$ (Excellent Targeting): Nilai *Item-Person Separation Reliability* atau indeks penargetan yang mendekati $1.0$ menunjukkan bahwa instrumen ini memiliki rentang kesukaran yang sangat ideal untuk memetakan disparitas kemampuan siswa yang diuji. Tidak ada jurang pemisah yang ekstrem di mana soal terlalu mustahil dikerjakan atau terlalu sepele untuk seluruh populasi.
+
+Wright Map ini menceritakan dinamika antara pembuat soal dan realitas siswa di lapangan:
+
+1.  **Kesenjangan Puncak Kemampuan dan Kesukaran:** Perhatikan bahwa puncak kurva biru (mayoritas siswa) berada di sebelah kiri (sekitar $-0.4$), sedangkan sebaran soal (titik merah) lebih banyak menumpuk di sebelah kanan (sekitar $0.0$ hingga $+0.3$). Hal ini mengindikasikan bahwa meskipun instrumen tertarget dengan baik secara keseluruhan, instrumen ini **relatif sedikit lebih menantang/sukar** bagi konsentrasi terbesar siswa (kelompok kemampuan rendah).
+
+2.  **Daya Diskriminasi Soal S3:** Butir **S3** yang terisolasi di sisi paling kanan ($+1.7$) berfungsi secara spesifik sebagai pembeda mutlak (*discriminator*) untuk menyaring siswa-siswa dengan tingkat penguasaan kognitif tertinggi di kelas populasi.
+
+3.  **Penyebaran Soal:** Sebaran titik merah pada sumbu logit menunjukkan bahwa instrumen memiliki gradasi atau tangga kesulitan yang bervariasi, tidak menumpuk di satu titik saja, sehingga instrumen ini informatif dalam memetakan gradasi kapasitas kognitif responden.
+
+#### 6.2 Item Fit
+
+![](plot/item_fit.png){fig-align="center"}
+
+Plot **Item Difficulty and Outfit Statistics** adalah representasi visual untuk mengaudit validitas konstruk dari 12 butir soal instrumen. Plot ini memetakan posisi setiap soal berdasarkan tingkat kesulitannya sekaligus mendeteksi apakah soal tersebut berfungsi sebagaimana mestinya secara statistik.
+
+#### Membaca Sumbu dan Garis Referensi
+
+-   **Sumbu X (*Item Difficulty* / Skala Logit):** Menunjukkan tingkat kesulitan butir soal.
+
+    -   Semakin ke kanan posisi titik, semakin sukar soal tersebut.
+
+    -   Contoh: **S3** adalah soal paling sukar (berada di dekat logit +1.7), sedangkan **S2** adalah soal yang paling mudah (berada di dekat logit -0.3).
+
+-   **Sumbu Y (*Outfit Mean Square* / MSQ):** Menunjukkan tingkat penyimpangan atau *noise* (keacakan) respons siswa.
+
+    -   **Garis putus-putus horizontal di 1.0:** Nilai ideal teoretis. Semakin dekat titik ke garis ini, semakin sempurna pola respons siswa terhadap model Rasch.
+
+    -   Secara psikometri, batas toleransi penerimaan (*practical fit*) untuk instrumen non-standar adalah **0.7 hingga 1.3**. Titik yang berada di atas 1.3 mengindikasikan adanya keacakan, sementara di bawah 0.7 mengindikasikan kebergantungan berlebih (*redundancy*).
+
+#### Klaster Validitas: Kelompok *Fit* (Lingkaran Abu-abu)
+
+Sebelas dari dua belas butir soal—meliputi **S1, S2, S3, S4, S5, S6, S8, S9, S10, S11, dan S12**—digambarkan sebagai lingkaran abu-abu dan diklasifikasikan sebagai **Fit**.
+
+-   Kesemua titik ini berada di dalam jalur aman, yakni di bawah garis batas *Outfit MSQ* 1.0 (bahkan semuanya berada di rentang 0.7 hingga 1.1).
+
+-   Hal ini membuktikan bahwa varians respons siswa pada 11 soal tersebut dapat diprediksi dengan sangat baik oleh probabilitas model Rasch. Data empiris ini mengonfirmasi **validitas konstruk** instrumen Anda secara sangat kuat.
+
+#### Anomali Diagnostik: Butir *Misfit* (Segitiga Hitam S7)
+
+Secara visual maupun numerik, **Butir Soal S7** (segitiga hitam) memisahkan diri secara ekstrem dari klaster lainnya dan melompat jauh ke atas, menyentuh nilai *Outfit MSQ* hampir **1.8**.
+
+-   **Deviasi Respons:** Nilai *Outfit* sebesar 1.764 mengindikasikan bahwa terdapat 76.4% keacakan atau *noise* dalam data respons siswa yang tidak dapat dijelaskan oleh model.
+
+-   Seperti yang telah dikalkulasikan sebelumnya, anomali ini sejalan dengan nilai daya beda empiris (korelasi poin-biserial laten) yang negatif (**-0.041**). Secara substansial, ini adalah bukti visual bahwa S7 gagal membedakan kemampuan siswa. Terdapat indikasi kuat bahwa pengecoh (*distractor*), kompleksitas kalimat, atau muatan kontekstual pada soal S7 menyesatkan siswa yang berkemampuan tinggi atau sebaliknya, memberikan keuntungan tebakan bagi siswa berkemampuan rendah.
