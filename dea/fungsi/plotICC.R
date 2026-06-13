@@ -1,4 +1,4 @@
-plot_icc_clean <- function(model_object,
+plot_icc <- function(model_object,
                            item_name) {
 
   # =========================
