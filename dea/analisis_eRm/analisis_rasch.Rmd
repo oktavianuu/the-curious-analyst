@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Memasukkan library/ paket yang digunakan untuk analisis 
+Memasukkan library/ paket yang digunakan untuk analisis 
 
 ```{r}
 library(eRm) # digunakan untuk pemodelan rasch

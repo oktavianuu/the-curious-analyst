@@ -152,8 +152,16 @@ tabel_kategori <- classify_difficulty_sumintono(
 print(tabel_kategori)
 ```
 
-#### Visualisasi 
+#### Visualisasi
 
 ```{r}
 plot_wright_map(rasch_model_pcm)
+```
+
+```{r}
+plot_threshold_map(rasch_model_pcm)
+```
+
+```{r}
+plot_icc(rasch_model_pcm, "S3")
 ```
