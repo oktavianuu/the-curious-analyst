@@ -4,7 +4,7 @@ format: revealjs
 editor: visual
 ---
 
-## Analisis Rasch
+# Analisis Rasch
 
 ```{r}
 library(eRm) # digunakan untuk pemodelan rasch
@@ -15,7 +15,7 @@ library(ggplot2) # digunakan untuk membuat grafik
 library(tidyr) # digunakan untuk merapikan data
 ```
 
-### Memasukkan Fungsi manual yang digunakan dalam analisis
+## Memasukkan Fungsi manual yang digunakan dalam analisis
 
 ```{r}
 source("fungsi/plotICC.R")
@@ -24,7 +24,7 @@ source("fungsi/treshold.R")
 source("fungsi/rasch_item_diagnostics.R")
 ```
 
-### Memasukkan Data
+## Memasukkan Data
 
 ```{r}
 data <- read_excel("baruuu.xlsx") # membaca data menggunakan fungsi readxl dan menyimpannya di dataframe data
@@ -71,7 +71,7 @@ mloef_median <- MLoef(rasch_model_pcm, splitcr = "mean")
 mloef_median
 ```
 
-#### Uji Invariansi 
+#### Uji Invariansi
 
 ```{r}
 lrt_mean_split <- LRtest(rasch_model_pcm, splitcr = "mean")

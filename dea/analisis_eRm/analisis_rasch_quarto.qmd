@@ -16,12 +16,20 @@ library(ggplot2) # digunakan untuk membuat grafik
 library(tidyr) # digunakan untuk merapikan data
 ```
 
+```{r}
+source("fungsi/plotICC.R")
+source("fungsi/wrightmap.R")
+source("fungsi/treshold.R")
+source("fungsi/rasch_item_diagnostics.R")
+source("fungsi/tabel_distribusi_lrt.R")
+```
+
 ### 2. Persiapan Data
 
 #### 2.1 Memasukkan Data
 
 ```{r}
-data <- read_excel("baruuu.xlsx") # membaca data menggunakan fungsi readxl dan menyimpannya di dataframe data
+data <- read_excel("data.xlsx") # membaca data menggunakan fungsi readxl dan menyimpannya di dataframe data
 head(data, 5) # menampilkan 5 data teratas (mengecek apakah data sudah dibaca dengan benar oleh R)
 ```
 

@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dea">
+
+<title>Analisis rasch</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="analisis_rasch_quarto_files/libs/clipboard/clipboard.min.js"></script>
+<script src="analisis_rasch_quarto_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="analisis_rasch_quarto_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="analisis_rasch_quarto_files/libs/quarto-html/popper.min.js"></script>
+<script src="analisis_rasch_quarto_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="analisis_rasch_quarto_files/libs/quarto-html/anchor.min.js"></script>
+<link href="analisis_rasch_quarto_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="analisis_rasch_quarto_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="analisis_rasch_quarto_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="analisis_rasch_quarto_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="analisis_rasch_quarto_files/libs/bootstrap/bootstrap-c6b836cf4e9ad4757f51e44ae26266b7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Analisis rasch</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dea </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="memasukkan-librarypaket-yang-digunakan-untuk-analisis" class="level3">
+<h3 class="anchored" data-anchor-id="memasukkan-librarypaket-yang-digunakan-untuk-analisis">1. Memasukkan library/paket yang digunakan untuk analisis</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(eRm) <span class="co"># digunakan untuk pemodelan rasch</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl) <span class="co"># digunakan untuk membaca file excel</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'psych'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:eRm':
+
+    sim.rasch</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2) <span class="co"># digunakan untuk membuat grafik</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'ggplot2'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:psych':
+
+    %+%, alpha</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr) <span class="co"># digunakan untuk merapikan data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"fungsi/plotICC.R"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"fungsi/wrightmap.R"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"fungsi/treshold.R"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"fungsi/rasch_item_diagnostics.R"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"fungsi/tabel_distribusi_lrt.R"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="persiapan-data" class="level3">
+<h3 class="anchored" data-anchor-id="persiapan-data">2. Persiapan Data</h3>
+<section id="memasukkan-data" class="level4">
+<h4 class="anchored" data-anchor-id="memasukkan-data">2.1 Memasukkan Data</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"data.xlsx"</span>) <span class="co"># membaca data menggunakan fungsi readxl dan menyimpannya di dataframe data</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data, <span class="dv">5</span>) <span class="co"># menampilkan 5 data teratas (mengecek apakah data sudah dibaca dengan benar oleh R)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 12
+     S1    S2    S3    S4    S5    S6    S7    S8    S9   S10   S11   S12
+  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     3     3     1     3     3     3     0     3     3     4     4     3
+2     3     3     1     4     2     3     2     2     2     3     2     2
+3     2     3     1     2     0     3     4     2     2     1     2     3
+4     2     3     1     3     0     1     0     4     3     1     2     3
+5     3     4     1     4     1     2     0     0     2     4     3     2</code></pre>
+</div>
+</div>
+</section>
+<section id="menghitung-distribusi-jawaban-opsional" class="level4">
+<h4 class="anchored" data-anchor-id="menghitung-distribusi-jawaban-opsional">2.2 Menghitung Distribusi Jawaban (opsional)</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Menghitung Frekuensi Murni (Angka Riil)</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>f_mat <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(data[, <span class="fu">paste0</span>(<span class="st">"S"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)], <span class="dv">2</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">table</span>(<span class="fu">factor</span>(x, <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Menghitung Proporsi Persentase</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>p_mat <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(data[, <span class="fu">paste0</span>(<span class="st">"S"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)], <span class="dv">2</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prop.table</span>(<span class="fu">table</span>(<span class="fu">factor</span>(x, <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>))) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Menyatukan keduanya menjadi format "F (P%)"</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>tabel_gabungan <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sprintf</span>(<span class="st">"%d (%.1f%%)"</span>, f_mat, p_mat), </span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="fu">nrow</span>(f_mat), </span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="fu">rownames</span>(f_mat), <span class="fu">paste</span>(<span class="st">"Skor"</span>, <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>))</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Tampilkan Hasil Akhir ke Konsol</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(tabel_gabungan, <span class="at">quote =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Skor 0     Skor 1     Skor 2     Skor 3     Skor 4    
+S1  40 (39.2%) 5 (4.9%)   11 (10.8%) 45 (44.1%) 1 (1.0%)  
+S2  3 (2.9%)   6 (5.9%)   32 (31.4%) 47 (46.1%) 14 (13.7%)
+S3  56 (54.9%) 43 (42.2%) 3 (2.9%)   0 (0.0%)   0 (0.0%)  
+S4  2 (2.0%)   38 (37.3%) 32 (31.4%) 24 (23.5%) 6 (5.9%)  
+S5  26 (25.5%) 27 (26.5%) 27 (26.5%) 17 (16.7%) 5 (4.9%)  
+S6  6 (5.9%)   10 (9.8%)  18 (17.6%) 57 (55.9%) 11 (10.8%)
+S7  44 (43.1%) 1 (1.0%)   20 (19.6%) 7 (6.9%)   30 (29.4%)
+S8  7 (6.9%)   2 (2.0%)   75 (73.5%) 12 (11.8%) 6 (5.9%)  
+S9  6 (5.9%)   2 (2.0%)   52 (51.0%) 36 (35.3%) 6 (5.9%)  
+S10 15 (14.7%) 14 (13.7%) 17 (16.7%) 26 (25.5%) 30 (29.4%)
+S11 14 (13.7%) 22 (21.6%) 30 (29.4%) 23 (22.5%) 13 (12.7%)
+S12 6 (5.9%)   19 (18.6%) 16 (15.7%) 56 (54.9%) 5 (4.9%)  </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="estimasi-parameter-menggunakan-pcm" class="level3">
+<h3 class="anchored" data-anchor-id="estimasi-parameter-menggunakan-pcm">3. Estimasi Parameter Menggunakan PCM</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>rasch_model_pcm <span class="ot">&lt;-</span> <span class="fu">PCM</span>(data)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(rasch_model_pcm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Results of PCM estimation: 
+
+Call:  PCM(X = data) 
+
+Conditional log-likelihood: -1178.411 
+Number of iterations: 51 
+Number of parameters: 45 
+
+Item (Category) Difficulty Parameters (eta): with 0.95 CI:
+       Estimate Std. Error lower CI upper CI
+S1.c2     1.526      0.352    0.836    2.217
+S1.c3     0.387      0.273   -0.148    0.922
+S1.c4     4.560      1.005    2.590    6.529
+S2.c1    -0.728      0.692   -2.084    0.627
+S2.c2    -2.342      0.577   -3.473   -1.211
+S2.c3    -2.560      0.562   -3.662   -1.458
+S2.c4    -1.073      0.602   -2.251    0.106
+S3.c1     0.447      0.210    0.036    0.858
+S3.c2     3.406      0.597    2.237    4.575
+S4.c1    -2.914      0.703   -4.292   -1.536
+S4.c2    -2.609      0.688   -3.959   -1.260
+S4.c3    -2.081      0.682   -3.418   -0.744
+S4.c4    -0.347      0.757   -1.830    1.137
+S5.c1     0.040      0.275   -0.499    0.580
+S5.c2     0.222      0.289   -0.344    0.788
+S5.c3     0.970      0.346    0.293    1.648
+S5.c4     2.582      0.528    1.547    3.616
+S6.c1    -0.540      0.508   -1.536    0.455
+S6.c2    -1.062      0.461   -1.967   -0.158
+S6.c3    -2.043      0.426   -2.877   -1.209
+S6.c4    -0.117      0.510   -1.117    0.884
+S7.c1     3.845      1.004    1.878    5.812
+S7.c2     1.009      0.288    0.444    1.574
+S7.c3     2.312      0.433    1.464    3.161
+S7.c4     1.198      0.330    0.552    1.844
+S8.c1     1.266      0.792   -0.287    2.820
+S8.c2    -2.242      0.388   -3.002   -1.481
+S8.c3    -0.182      0.473   -1.109    0.744
+S8.c4     0.848      0.562   -0.254    1.950
+S9.c1     1.089      0.807   -0.492    2.669
+S9.c2    -2.081      0.421   -2.906   -1.255
+S9.c3    -1.515      0.436   -2.369   -0.661
+S9.c4     0.585      0.576   -0.544    1.713
+S10.c1    0.060      0.369   -0.664    0.783
+S10.c2   -0.048      0.360   -0.754    0.657
+S10.c3   -0.285      0.349   -0.969    0.399
+S10.c4   -0.138      0.369   -0.861    0.584
+S11.c1   -0.423      0.339   -1.088    0.241
+S11.c2   -0.604      0.329   -1.249    0.041
+S11.c3   -0.105      0.360   -0.812    0.601
+S11.c4    0.801      0.426   -0.034    1.636
+S12.c1   -1.162      0.459   -2.062   -0.262
+S12.c2   -0.901      0.468   -1.818    0.016
+S12.c3   -1.958      0.425   -2.791   -1.125
+S12.c4    0.762      0.602   -0.418    1.941
+
+Item Easiness Parameters (beta) with 0.95 CI:
+            Estimate Std. Error lower CI upper CI
+beta S1.c1    -2.146      0.473   -3.073   -1.220
+beta S1.c2    -1.526      0.352   -2.217   -0.836
+beta S1.c3    -0.387      0.273   -0.922    0.148
+beta S1.c4    -4.560      1.005   -6.529   -2.590
+beta S2.c1     0.728      0.692   -0.627    2.084
+beta S2.c2     2.342      0.577    1.211    3.473
+beta S2.c3     2.560      0.562    1.458    3.662
+beta S2.c4     1.073      0.602   -0.106    2.251
+beta S3.c1    -0.447      0.210   -0.858   -0.036
+beta S3.c2    -3.406      0.597   -4.575   -2.237
+beta S4.c1     2.914      0.703    1.536    4.292
+beta S4.c2     2.609      0.688    1.260    3.959
+beta S4.c3     2.081      0.682    0.744    3.418
+beta S4.c4     0.347      0.757   -1.137    1.830
+beta S5.c1    -0.040      0.275   -0.580    0.499
+beta S5.c2    -0.222      0.289   -0.788    0.344
+beta S5.c3    -0.970      0.346   -1.648   -0.293
+beta S5.c4    -2.582      0.528   -3.616   -1.547
+beta S6.c1     0.540      0.508   -0.455    1.536
+beta S6.c2     1.062      0.461    0.158    1.967
+beta S6.c3     2.043      0.426    1.209    2.877
+beta S6.c4     0.117      0.510   -0.884    1.117
+beta S7.c1    -3.845      1.004   -5.812   -1.878
+beta S7.c2    -1.009      0.288   -1.574   -0.444
+beta S7.c3    -2.312      0.433   -3.161   -1.464
+beta S7.c4    -1.198      0.330   -1.844   -0.552
+beta S8.c1    -1.266      0.792   -2.820    0.287
+beta S8.c2     2.242      0.388    1.481    3.002
+beta S8.c3     0.182      0.473   -0.744    1.109
+beta S8.c4    -0.848      0.562   -1.950    0.254
+beta S9.c1    -1.089      0.807   -2.669    0.492
+beta S9.c2     2.081      0.421    1.255    2.906
+beta S9.c3     1.515      0.436    0.661    2.369
+beta S9.c4    -0.585      0.576   -1.713    0.544
+beta S10.c1   -0.060      0.369   -0.783    0.664
+beta S10.c2    0.048      0.360   -0.657    0.754
+beta S10.c3    0.285      0.349   -0.399    0.969
+beta S10.c4    0.138      0.369   -0.584    0.861
+beta S11.c1    0.423      0.339   -0.241    1.088
+beta S11.c2    0.604      0.329   -0.041    1.249
+beta S11.c3    0.105      0.360   -0.601    0.812
+beta S11.c4   -0.801      0.426   -1.636    0.034
+beta S12.c1    1.162      0.459    0.262    2.062
+beta S12.c2    0.901      0.468   -0.016    1.818
+beta S12.c3    1.958      0.425    1.125    2.791
+beta S12.c4   -0.762      0.602   -1.941    0.418</code></pre>
+</div>
+</div>
+</section>
+<section id="evaluasi" class="level3">
+<h3 class="anchored" data-anchor-id="evaluasi">4. Evaluasi</h3>
+<section id="uji-unidimensionalitas" class="level4">
+<h4 class="anchored" data-anchor-id="uji-unidimensionalitas">4.1 Uji Unidimensionalitas</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>mloef_median <span class="ot">&lt;-</span> <span class="fu">MLoef</span>(rasch_model_pcm, <span class="at">splitcr =</span> <span class="st">"mean"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>mloef_median</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Martin-Loef-Test (split criterion: mean)
+LR-value: 184.706 
+Chi-square df: 503 
+p-value: 1 </code></pre>
+</div>
+</div>
+</section>
+<section id="uji-invariansi-parameter-berdasarkan-nilai-rata-rata" class="level4">
+<h4 class="anchored" data-anchor-id="uji-invariansi-parameter-berdasarkan-nilai-rata-rata">4.2 Uji Invariansi Parameter Berdasarkan Nilai Rata-rata</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>lrt_mean_split <span class="ot">&lt;-</span> <span class="fu">LRtest</span>(rasch_model_pcm, <span class="at">splitcr =</span> <span class="st">"mean"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in LRtest.Rm(rasch_model_pcm, splitcr = "mean"): 
+The following items were excluded due to inappropriate response patterns within
+subgroups:
+S1 S3 S5 S12 S4 S9 S2 S7 S8
+
+Full and subgroup models are estimated without these items!</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>lrt_mean_split</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Andersen LR-test: 
+LR-value: 10.051 
+Chi-square df: 11 
+p-value:  0.526 </code></pre>
+</div>
+</div>
+<section id="analisis-distribusi-jawaban-siswa-atas-dan-bawah" class="level5">
+<h5 class="anchored" data-anchor-id="analisis-distribusi-jawaban-siswa-atas-dan-bawah">4.2.1 Analisis Distribusi Jawaban Siswa Atas dan Bawah</h5>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>hasil_mean <span class="ot">&lt;-</span> <span class="fu">tabel_distribusi_lrt</span>(<span class="at">data_matrix =</span> data, </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">item_names =</span> <span class="fu">paste0</span>(<span class="st">"S"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>), </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">splitcr =</span> <span class="st">"mean"</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Cetak ke konsol dengan perataan kanan absolut</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(hasil_mean, <span class="at">quote =</span> <span class="cn">FALSE</span>, <span class="at">right =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 Skor 0     Skor 1     Skor 2     Skor 3     Skor 4 Status
+S1 - Rendah  33 (70.2%)   2 (4.3%)   4 (8.5%)  8 (17.0%)   0 (0.0%)      *
+S1 - Tinggi   7 (12.7%)   3 (5.5%)  7 (12.7%) 37 (67.3%)   1 (1.8%)       
+                                                                          
+S2 - Rendah    2 (4.3%)  6 (12.8%) 19 (40.4%) 13 (27.7%)  7 (14.9%)      *
+S2 - Tinggi    1 (1.8%)   0 (0.0%) 13 (23.6%) 34 (61.8%)  7 (12.7%)       
+                                                                          
+S3 - Rendah  34 (72.3%) 13 (27.7%)   0 (0.0%)   0 (0.0%)   0 (0.0%)      *
+S3 - Tinggi  22 (40.0%) 30 (54.5%)   3 (5.5%)   0 (0.0%)   0 (0.0%)       
+                                                                          
+S4 - Rendah    2 (4.3%) 21 (44.7%) 17 (36.2%)  5 (10.6%)   2 (4.3%)      *
+S4 - Tinggi    0 (0.0%) 17 (30.9%) 15 (27.3%) 19 (34.5%)   4 (7.3%)       
+                                                                          
+S5 - Rendah  17 (36.2%) 10 (21.3%) 14 (29.8%)  6 (12.8%)   0 (0.0%)      *
+S5 - Tinggi   9 (16.4%) 17 (30.9%) 13 (23.6%) 11 (20.0%)   5 (9.1%)       
+                                                                          
+S6 - Rendah    4 (8.5%)  9 (19.1%) 11 (23.4%) 21 (44.7%)   2 (4.3%)       
+S6 - Tinggi    2 (3.6%)   1 (1.8%)  7 (12.7%) 36 (65.5%)  9 (16.4%)       
+                                                                          
+S7 - Rendah  25 (53.2%)   1 (2.1%) 11 (23.4%)   4 (8.5%)  6 (12.8%)      *
+S7 - Tinggi  19 (34.5%)   0 (0.0%)  9 (16.4%)   3 (5.5%) 24 (43.6%)       
+                                                                          
+S8 - Rendah    4 (8.5%)   2 (4.3%) 31 (66.0%)  6 (12.8%)   4 (8.5%)      *
+S8 - Tinggi    3 (5.5%)   0 (0.0%) 44 (80.0%)  6 (10.9%)   2 (3.6%)       
+                                                                          
+S9 - Rendah   6 (12.8%)   1 (2.1%) 29 (61.7%) 10 (21.3%)   1 (2.1%)      *
+S9 - Tinggi    0 (0.0%)   1 (1.8%) 23 (41.8%) 26 (47.3%)   5 (9.1%)       
+                                                                          
+S10 - Rendah 12 (25.5%) 12 (25.5%) 10 (21.3%)  9 (19.1%)   4 (8.5%)       
+S10 - Tinggi   3 (5.5%)   2 (3.6%)  7 (12.7%) 17 (30.9%) 26 (47.3%)       
+                                                                          
+S11 - Rendah 12 (25.5%) 17 (36.2%)  9 (19.1%)  7 (14.9%)   2 (4.3%)       
+S11 - Tinggi   2 (3.6%)   5 (9.1%) 21 (38.2%) 16 (29.1%) 11 (20.0%)       
+                                                                          
+S12 - Rendah  5 (10.6%) 16 (34.0%)  8 (17.0%) 18 (38.3%)   0 (0.0%)      *
+S12 - Tinggi   1 (1.8%)   3 (5.5%)  8 (14.5%) 38 (69.1%)   5 (9.1%)       
+                                                                          </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="reliabilitas-item-dan-person" class="level4">
+<h4 class="anchored" data-anchor-id="reliabilitas-item-dan-person">4.3 Reliabilitas Item dan Person</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># reliabilitas person</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>person_pars <span class="ot">&lt;-</span> <span class="fu">person.parameter</span>(rasch_model_pcm)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>p_rel_obj   <span class="ot">&lt;-</span> <span class="fu">SepRel</span>(person_pars)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>person_reliability <span class="ot">&lt;-</span> p_rel_obj<span class="sc">$</span>sep.rel</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="co"># reliabilitas item</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co"># eRm menyimpan parameter item di $betapar sebagai nilau easiness. </span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="co"># mengalikannya dengan -1 mengubahnya menjadi kesukaran.</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>item_difficulties <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">*</span> rasch_model_pcm<span class="sc">$</span>betapar</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Mengekstrak nilai SE masing2 parameter item</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>item_se <span class="ot">&lt;-</span> rasch_model_pcm<span class="sc">$</span>se.beta</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="co"># menghitung varians item dan mean error variance</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>observed_item_var   <span class="ot">&lt;-</span> <span class="fu">var</span>(item_difficulties)</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>mean_item_error_var <span class="ot">&lt;-</span> <span class="fu">mean</span>(item_se<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="co"># mengaplikasikan reliabilitas item rasch: (Observed Var - Error Var) / Observed Var</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>item_reliability <span class="ot">&lt;-</span> (observed_item_var <span class="sc">-</span> mean_item_error_var) <span class="sc">/</span> observed_item_var</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a><span class="co"># menampilkan hasil</span></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Rasch Reliability Metrics:</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rasch Reliability Metrics:</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Person Reliability (Separation): "</span>, <span class="fu">round</span>(person_reliability, <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Person Reliability (Separation):  0.62 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Item Reliability (Separation)  : "</span>, <span class="fu">round</span>(item_reliability, <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Item Reliability (Separation)  :  0.905 </code></pre>
+</div>
+</div>
+</section>
+<section id="analisis-kecocokan-model" class="level4">
+<h4 class="anchored" data-anchor-id="analisis-kecocokan-model">4.4 Analisis Kecocokan Model</h4>
+<section id="item-fit" class="level5">
+<h5 class="anchored" data-anchor-id="item-fit">4.4.1 Item Fit</h5>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">itemfit</span>(<span class="fu">person.parameter</span>(rasch_model_pcm))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Itemfit Statistics: 
+      Chisq  df p-value Outfit MSQ Infit MSQ Outfit t Infit t Discrim
+S1   76.388 101   0.968      0.749     0.785   -1.909  -2.282   0.606
+S2   93.314 101   0.694      0.915     0.962   -0.521  -0.204   0.249
+S3   90.663 101   0.760      0.889     0.914   -0.944  -0.724   0.432
+S4  101.708 101   0.462      0.997     0.994    0.018  -0.014   0.276
+S5  108.038 101   0.298      1.059     1.050    0.517   0.458   0.215
+S6   96.788 101   0.600      0.949     0.916   -0.258  -0.538   0.347
+S7  179.973 101   0.000      1.764     1.429    3.980   3.445  -0.041
+S8  100.127 101   0.506      0.982     0.994   -0.032   0.030   0.106
+S9   75.659 101   0.972      0.742     0.778   -1.618  -1.389   0.529
+S10  82.940 101   0.905      0.813     0.800   -1.438  -1.809   0.530
+S11  73.544 101   0.982      0.721     0.724   -2.576  -2.589   0.665
+S12  88.530 101   0.808      0.868     0.877   -0.892  -0.955   0.422</code></pre>
+</div>
+</div>
+</section>
+<section id="person-fit" class="level5">
+<h5 class="anchored" data-anchor-id="person-fit">4.4.2 Person Fit</h5>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">personfit</span>(<span class="fu">person.parameter</span>(rasch_model_pcm))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Personfit Statistics: 
+      Chisq df p-value Outfit MSQ Infit MSQ Outfit t Infit t
+P1   13.442 11   0.265      1.120     1.651     0.40    1.19
+P2    6.028 11   0.871      0.502     0.465    -1.24   -1.41
+P3    6.596 11   0.831      0.550     0.735    -1.21   -0.76
+P4   16.825 11   0.113      1.402     1.084     1.04    0.36
+P5   21.336 11   0.030      1.778     1.475     1.68    1.30
+P6    6.432 11   0.843      0.536     0.704    -1.28   -0.90
+P7   34.835 11   0.000      2.903     2.491     3.30    2.73
+P8   11.848 11   0.375      0.987     0.850     0.09   -0.35
+P9   23.668 11   0.014      1.972     1.501     1.87    1.15
+P10  20.738 11   0.036      1.728     1.443     1.64    1.30
+P11   6.896 11   0.807      0.575     0.998    -0.96    0.15
+P12   7.583 11   0.750      0.632     0.671    -0.90   -0.95
+P13   8.910 11   0.630      0.743     0.828    -0.60   -0.44
+P14   7.698 11   0.740      0.641     0.907    -0.84   -0.13
+P15  12.082 11   0.357      1.007     0.934     0.15   -0.06
+P16   9.887 11   0.541      0.824     1.239    -0.24    0.61
+P17   6.771 11   0.817      0.564     0.760    -1.13   -0.63
+P18   7.413 11   0.765      0.618     0.736    -1.03   -0.74
+P19  11.214 11   0.425      0.935     0.830    -0.03   -0.40
+P20   6.069 11   0.869      0.506     0.536    -1.23   -1.15
+P21  13.437 11   0.266      1.120     1.065     0.42    0.30
+P22   5.742 11   0.890      0.478     0.470    -1.45   -1.79
+P23  10.733 11   0.466      0.894     1.343    -0.07    0.79
+P24  11.082 11   0.436      0.923     1.015    -0.07    0.15
+P25   2.302 11   0.997      0.192     0.213    -2.25   -2.05
+P26  11.341 11   0.415      0.945     1.044    -0.01    0.24
+P27   7.090 11   0.792      0.591     0.672    -1.12   -1.01
+P28  12.047 11   0.360      1.004     1.170     0.14    0.57
+P29  16.094 11   0.138      1.341     0.963     0.87    0.03
+P30  10.566 11   0.480      0.881     0.980    -0.20    0.06
+P31  16.671 11   0.118      1.389     1.673     0.75    1.23
+P32   9.634 11   0.564      0.803     0.627    -0.13   -0.61
+P33   7.455 11   0.761      0.621     0.996    -0.85    0.14
+P34  12.184 11   0.350      1.015     1.430     0.18    1.02
+P35   6.240 11   0.857      0.520     0.576    -1.22   -1.12
+P36  10.472 11   0.489      0.873     1.020    -0.18    0.19
+P37  14.323 11   0.216      1.194     0.999     0.59    0.11
+P38  10.468 11   0.489      0.872     0.595    -0.21   -1.35
+P39   5.845 11   0.883      0.487     0.345    -1.53   -2.20
+P40   8.104 11   0.704      0.675     0.627    -0.83   -1.04
+P41   5.235 11   0.919      0.436     0.445    -1.75   -1.71
+P42   8.273 11   0.689      0.689     0.691    -0.76   -0.74
+P43  14.782 11   0.193      1.232     1.177     0.69    0.56
+P44  10.420 11   0.493      0.868     1.134    -0.22    0.50
+P45  12.008 11   0.363      1.001     1.558     0.15    1.18
+P46  10.701 11   0.469      0.892     1.017    -0.16    0.16
+P47   5.727 11   0.891      0.477     0.454    -1.58   -1.83
+P48  12.695 11   0.314      1.058     1.032     0.28    0.21
+P49  10.123 11   0.519      0.844     1.045    -0.25    0.24
+P50  11.443 11   0.407      0.954     0.912     0.01   -0.15
+P51  20.102 11   0.044      1.675     1.478     1.25    0.95
+P52   5.670 11   0.894      0.473     0.455    -1.35   -1.45
+P53   9.263 11   0.598      0.772     0.790    -0.39   -0.33
+P54   8.504 11   0.668      0.709     0.546    -0.67   -1.53
+P55   8.835 11   0.637      0.736     0.703    -0.48   -0.56
+P56   9.366 11   0.588      0.781     0.772    -0.39   -0.44
+P57   5.253 11   0.918      0.438     0.655    -1.68   -1.10
+P58   5.038 11   0.929      0.420     0.440    -1.84   -1.81
+P59   5.863 11   0.882      0.489     0.752    -1.38   -0.60
+P60  10.035 11   0.527      0.836     1.169    -0.26    0.53
+P61  15.659 11   0.154      1.305     1.555     0.84    1.32
+P62  20.201 11   0.043      1.683     1.329     1.58    1.02
+P63   8.203 11   0.695      0.684     0.603    -0.78   -1.03
+P64  10.118 11   0.520      0.843     0.868    -0.28   -0.32
+P65   6.799 11   0.815      0.567     0.742    -1.06   -0.57
+P66   8.831 11   0.637      0.736     0.954    -0.61   -0.03
+P67  11.272 11   0.421      0.939     1.086    -0.02    0.34
+P68  17.588 11   0.092      1.466     1.368     0.95    0.79
+P69  10.345 11   0.500      0.862     0.959    -0.21    0.01
+P70  16.397 11   0.127      1.366     1.146     0.87    0.45
+P71  16.864 11   0.112      1.405     1.212     1.04    0.72
+P72  16.356 11   0.128      1.363     1.366     0.97    0.98
+P73  10.233 11   0.510      0.853     0.978    -0.20    0.09
+P74  35.928 11   0.000      2.994     2.340     2.40    2.36
+P75   6.612 11   0.830      0.551     0.509    -0.70   -1.21
+P76  13.174 11   0.282      1.098     0.944     0.37    0.00
+P77  10.846 11   0.456      0.904     0.941    -0.13   -0.06
+P78  10.985 11   0.445      0.915     1.336    -0.04    0.81
+P79   9.241 11   0.600      0.770     0.861    -0.44   -0.23
+P80   7.859 11   0.726      0.655     0.635    -0.89   -0.97
+P81  21.123 11   0.032      1.760     1.751     1.62    1.60
+P82   7.754 11   0.735      0.646     0.754    -0.87   -0.69
+P83  12.554 11   0.323      1.046     1.179     0.25    0.62
+P84  19.129 11   0.059      1.594     1.642     1.34    1.42
+P85   6.343 11   0.850      0.529     0.453    -1.06   -1.46
+P86  14.721 11   0.196      1.227     1.034     0.68    0.21
+P87  35.898 11   0.000      2.992     2.434     3.35    3.07
+P88  15.674 11   0.154      1.306     1.253     0.80    0.70
+P89   9.713 11   0.556      0.809     0.914    -0.36   -0.14
+P90   9.806 11   0.548      0.817     0.668    -0.17   -0.50
+P91   7.098 11   0.791      0.592     0.489    -0.98   -1.45
+P92  11.341 11   0.415      0.945     0.893    -0.02   -0.17
+P93   8.384 11   0.679      0.699     0.588    -0.70   -1.05
+P94   4.518 11   0.952      0.376     0.326    -1.51   -1.61
+P95   6.161 11   0.862      0.513     0.500    -1.39   -1.42
+P96  10.010 11   0.529      0.834     1.066    -0.32    0.30
+P97  19.421 11   0.054      1.618     1.824     1.43    1.76
+P98  12.333 11   0.339      1.028     1.097     0.20    0.38
+P99   5.681 11   0.894      0.473     0.463    -1.50   -1.92
+P100  8.405 11   0.677      0.700     0.685    -0.66   -0.71
+P101  8.307 11   0.686      0.692     0.746    -0.74   -0.74
+P102 12.350 11   0.338      1.029     0.960     0.20    0.03</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="analisis-kesukaran-soal-dan-ambang-batas-jawaban" class="level4">
+<h4 class="anchored" data-anchor-id="analisis-kesukaran-soal-dan-ambang-batas-jawaban">4.5 Analisis Kesukaran Soal dan Ambang Batas Jawaban</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">thresholds</span>(rasch_model_pcm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Design Matrix Block 1:
+    Location Threshold 1 Threshold 2 Threshold 3 Threshold 4
+S1   1.13996     2.14635    -0.61988    -1.13939     4.17276
+S2  -0.26814    -0.72817    -1.61408    -0.21779     1.48748
+S3   1.70287     0.44718     2.95857          NA          NA
+S4  -0.08668    -2.91431     0.30488     0.52865     1.73406
+S5   0.64538     0.04046     0.18169     0.74833     1.61105
+S6  -0.02914    -0.54046    -0.52178    -0.98036     1.92603
+S7   0.29946     3.84541    -2.83638     1.30301    -1.11422
+S8   0.21198     1.26632    -3.50799     2.05951     1.03006
+S9   0.14619     1.08858    -3.16922     0.56570     2.09971
+S10 -0.03455     0.05970    -0.10812    -0.23645     0.14665
+S11  0.20022    -0.42339    -0.18102     0.49899     0.90629
+S12  0.19040    -1.16204     0.26086    -1.05675     2.71951</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>tabel_diagnostik <span class="ot">&lt;-</span> <span class="fu">evaluate_item_fit</span>(rasch_model_pcm)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(tabel_diagnostik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Item Calibration Infit_MSQ Outfit_MSQ Infit_ZSTD Outfit_ZSTD   PTMEA Discrim
+1    S1      1.1400    0.7849     0.7489    -2.2819     -1.9091  0.6064  0.6064
+2    S2     -0.2681    0.9616     0.9148    -0.2035     -0.5206  0.2493  0.2493
+3    S3      1.7029    0.9138     0.8888    -0.7237     -0.9437  0.4325  0.4325
+4    S4     -0.0867    0.9936     0.9971    -0.0143      0.0181  0.2758  0.2758
+5    S5      0.6454    1.0500     1.0592     0.4577      0.5171  0.2155  0.2155
+6    S6     -0.0291    0.9156     0.9489    -0.5383     -0.2576  0.3469  0.3469
+7    S7      0.2995    1.4291     1.7644     3.4452      3.9805 -0.0410 -0.0410
+8    S8      0.2120    0.9942     0.9816     0.0298     -0.0323  0.1056  0.1056
+9    S9      0.1462    0.7775     0.7418    -1.3892     -1.6176  0.5295  0.5295
+10  S10     -0.0346    0.8002     0.8131    -1.8085     -1.4383  0.5304  0.5304
+11  S11      0.2002    0.7244     0.7210    -2.5890     -2.5761  0.6653  0.6653
+12  S12      0.1904    0.8775     0.8679    -0.9553     -0.8921  0.4219  0.4219
+13 MEAN      0.3432        NA         NA         NA          NA      NA      NA
+14   SD      0.5654        NA         NA         NA          NA      NA      NA</code></pre>
+</div>
+</div>
+</section>
+<section id="klasifikasi-tingkat-kesulitan-soal" class="level4">
+<h4 class="anchored" data-anchor-id="klasifikasi-tingkat-kesulitan-soal">Klasifikasi Tingkat Kesulitan Soal</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mengeluarkan MEAN dan SD dari perhitungan difficulty</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>data_item <span class="ot">&lt;-</span> tabel_diagnostik[<span class="sc">!</span>tabel_diagnostik<span class="sc">$</span>Item <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"MEAN"</span>, <span class="st">"SD"</span>), ]</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Memasukkan data ke dalam fungsi klasifikasi</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>tabel_kategori <span class="ot">&lt;-</span> <span class="fu">classify_difficulty_sumintono</span>(</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">item_vector  =</span> data_item<span class="sc">$</span>Item,</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">logit_vector =</span> data_item<span class="sc">$</span>Calibration</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+==================================================
+       SUMINTONO &amp; WIDHIARSO CALIBRATION
+==================================================
+ Empirical Mean (μ) : +0.3432 Logit
+ Empirical SD (σ)   : 0.5654 Logit
+--------------------------------------------------
+Very Difficult  : Logit &gt; +0.9086
+Difficult       : +0.3432 &lt; Logit &lt;= +0.9086
+Easy            : -0.2222 &lt;= Logit &lt;= +0.3432
+Very Easy       : Logit &lt; -0.2222
+==================================================</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(tabel_kategori)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Item   Logit Z-Score          Interval Classification
+1    S3  1.7029    2.40        &gt; +1.00 SD Very Difficult
+2    S1  1.1400    1.41        &gt; +1.00 SD Very Difficult
+3    S5  0.6454    0.53 0.00 s/d +1.00 SD      Difficult
+4    S7  0.2995   -0.08 -1.00 s/d 0.00 SD           Easy
+5    S8  0.2120   -0.23 -1.00 s/d 0.00 SD           Easy
+6   S11  0.2002   -0.25 -1.00 s/d 0.00 SD           Easy
+7   S12  0.1904   -0.27 -1.00 s/d 0.00 SD           Easy
+8    S9  0.1462   -0.35 -1.00 s/d 0.00 SD           Easy
+9    S6 -0.0291   -0.66 -1.00 s/d 0.00 SD           Easy
+10  S10 -0.0346   -0.67 -1.00 s/d 0.00 SD           Easy
+11   S4 -0.0867   -0.76 -1.00 s/d 0.00 SD           Easy
+12   S2 -0.2681   -1.08        &lt; -1.00 SD      Very Easy</code></pre>
+</div>
+</div>
+</section>
+<section id="visualisasi" class="level4">
+<h4 class="anchored" data-anchor-id="visualisasi">Visualisasi</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_wright_map</span>(rasch_model_pcm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analisis_rasch_quarto_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_threshold_map</span>(rasch_model_pcm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The `label.size` argument of `geom_label()` is deprecated as of ggplot2 3.5.0.
+ℹ Please use the `linewidth` argument instead.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analisis_rasch_quarto_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_icc</span>(rasch_model_pcm, <span class="st">"S3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analisis_rasch_quarto_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

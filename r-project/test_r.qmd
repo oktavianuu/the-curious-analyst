@@ -1,0 +1,44 @@
+---
+title: "test"
+author: okta
+format: html
+---
+```{r}
+library(tidyverse)
+```
+
+```{r}
+starwars <- dplyr::starwars
+```
+
+```{r}
+starwars_humans <- starwars |>
+  filter(
+    species == "Human"
+  )
+```
+
+What is the relationship between height and mass for humans in Star Wars Universe?
+```{r}
+ggplot(starwars_humans, aes(x = height, y = mass)) +
+  geom_point(aes(color = gender), size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Star Wars Humans: Height vs Mass",
+    x = "Height (cm)",
+    y = "Mass (kg)"
+  )
+# output: asis
+```
+
+What is the average height and mass by gender?
+```{r}
+starwars_humans |>
+  group_by(gender) |>
+  summarize(
+    avg_height = mean(height, na.rm = TRUE),
+    avg_mass = mean(mass, na.rm = TRUE),
+    n = n()
+  ) |>
+  arrange(desc(avg_height))
+```
