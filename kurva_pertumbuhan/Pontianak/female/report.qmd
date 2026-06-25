@@ -1,0 +1,161 @@
+---
+title: "Pemodelan Kurva Pertumbuhan Perempuan (11-19 Tahun) di Kota Pontianak Menggunakan GAMLSS"
+format: html
+execute: 
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+library(gamlss)
+library(writexl)
+library(readxl)
+library(tidyverse)  
+library(psych) 
+library(dplyr)
+library(tidyr)
+library(psych)
+```
+
+```{r}
+female <- read_excel("raw_data/female_data.xlsx")
+```
+
+### Scatterplot: Evaluasi hubungan antara variabel respons dan umur
+
+```{r}
+  female_scatterplot <- female %>%
+    select(umur, tb, bmi) %>%
+    pivot_longer(cols = c(tb, bmi),
+                names_to = "variable",
+                values_to = "value") %>%
+    mutate(
+      umur_int = floor(umur),  # pastikan umur integer untuk grouping
+      age_group = factor(umur_int)
+    ) %>%
+    ggplot(aes(x = umur_int, y = value)) +
+    
+    # Scatter data mentah
+    geom_point(alpha = 0.25, size = 1.2, color = "gray50") +
+    
+    # Boxplot per umur
+    geom_boxplot(aes(group = age_group),
+                width = 0.6,
+                alpha = 0.4,
+                outlier.shape = NA,
+                color = "black") +
+    
+    # Garis median per umur (lebih tegas dari boxplot)
+    stat_summary(fun = median,
+                geom = "line",
+                color = "red",
+                linewidth = 1) +
+    
+    # Garis quantile kasar (indikasi spread & skew)
+    stat_summary(fun = function(x) quantile(x, 0.10),
+                geom = "line",
+                color = "darkgreen",
+                linetype = "dashed") +
+    
+    stat_summary(fun = function(x) quantile(x, 0.90),
+                geom = "line",
+                color = "darkgreen",
+                linetype = "dashed") +
+    
+    # LOESS untuk melihat struktur mean non-linear
+    geom_smooth(method = "loess",
+                color = "blue",
+                se = FALSE,
+                linewidth = 1) +
+    
+    facet_wrap(~ variable, scales = "free_y", ncol = 1) +
+    
+    theme_minimal(base_size = 13) +
+    labs(
+      title = "Conditional Distribution by Age (Exploratory for GAMLSS)",
+      subtitle = "Red = Median | Green dashed = Q10 & Q90 | Blue = LOESS mean",
+      x = "Age (Years)",
+      y = "Measurement"
+    ) +
+    theme(
+      strip.text = element_text(face = "bold", size = 12)
+    )
+
+  female_scatterplot
+```
+
+---
+
+#### 1. Analisis Variabel Indeks Massa Tubuh (BMI)
+
+**Ringkasan Observasi dan Strategi Pemodelan**
+
+| Struktur Parameter | Hasil Observasi Empiris | Implikasi Pemodelan |
+| --- | --- | --- |
+| **Lokasi ($\mu$)** | Garis median dan *LOESS mean* hampir berimpit. Pola meningkat secara non-linear ringan hingga usia 16–17 tahun, kemudian relatif stabil. | Memerlukan fungsi *smoothing* pada persamaan $\mu = f(\text{umur})$. Pendekatan yang direkomendasikan adalah $\mu = \text{pb}(\text{umur})$. |
+| **Dispersi ($\sigma$)** | Jarak persentil ke-10 dan ke-90 konsisten pada rentang usia 12–17 tahun. Tidak ditemukan bukti kuat adanya heteroskedastisitas sistematis. | Asumsi awal dispersi ditetapkan sebagai $\sigma = \text{konstan}$. Pemodelan lanjutan $\sigma \sim \text{pb}(\text{umur})$ hanya dilakukan jika evaluasi residual menunjukkan pola spesifik. |
+| **Kemiringan ($\nu$)** | Terdapat *skewness* positif ringan yang konstan terhadap usia (selisih Q90–Q50 lebih besar dibandingkan Q50–Q10). | Disarankan menggunakan keluarga distribusi fleksibel seperti BCCG atau BCPE, tanpa memodelkan $\nu$ sebagai fungsi prediktor umur. |
+
+---
+
+#### 2. Analisis Variabel Tinggi Badan
+
+**Ringkasan Observasi dan Strategi Pemodelan**
+
+| Struktur Parameter | Hasil Observasi Empiris | Implikasi Pemodelan |
+| --- | --- | --- |
+| **Lokasi ($\mu$)** | Terlihat pola kenaikan non-linear yang sangat jelas hingga usia 15–16 tahun, dilanjutkan dengan fase *plateau*. | Wajib dimodelkan secara non-linear, misalnya menggunakan pendekatan *spline* atau $\mu = \text{pb}(\text{umur})$. |
+| **Dispersi ($\sigma$)** | Jarak Q90–Q10 dan batas *Interquartile Range* (IQR) stabil secara sistematis tanpa pelebaran antar kelompok usia. | Tidak ada indikasi heteroskedastisitas. Spesifikasi parameter awal yang optimal adalah $\sigma = \text{konstan}$. |
+| **Kemiringan ($\nu$)** | Jarak antar kuantil atas dan bawah relatif simetris dengan letak median yang berada di ekuilibrium tengah. | Distribusi mendekati simetris sempurna. Distribusi Normal (NO) ditetapkan sebagai kandidat model dasar yang paling rasional. |
+
+
+```{r}
+m1 <- gamlss(
+  bmi ~ pb(umur),
+  sigma.formula = ~ 1,
+  nu.formula = ~ 1,
+  family = BCCG,
+  data = female
+)
+```
+Berdasarkan analisis tersebut, maka model yang digunakan dalam penelitian ini adalah sebagai berikut
+```r
+m1 <- gamlss(
+  bmi ~ pb(umur),
+  sigma.formula = ~ 1,
+  nu.formula = ~ 1,
+  family = BCCG,
+  data = female
+)
+```
+#### Laporan Penetapan Spesifikasi Model *Baseline* GAMLSS ($m_1$)
+
+**1. Pemodelan Trayektori Lokasi ($\mu$)**
+Fokus pertama diarahkan pada penetapan bentuk kurva median pertumbuhan BMI terhadap usia. Melalui evaluasi empiris, diobservasi bahwa garis median dan *LOESS mean* saling berimpit, menunjukkan tren peningkatan non-linear yang mereda (membentuk *plateau*) saat subjek mendekati usia akhir masa remaja (16–17 tahun).
+
+Memaksakan garis lurus pada pola ini akan menghasilkan bias residual yang masif. Oleh karena itu, penggunaan fungsi linear sederhana ditolak dan parameter lokasi secara rasional ditetapkan sebagai fungsi *P-spline*:
+$\mu = \text{pb}(\text{umur})$
+
+Keputusan menggunakan `pb()` memberikan fleksibilitas pada model untuk secara otomatis mencari kelenturan kurva yang optimal tanpa risiko *overfitting*.
+
+**2. Asumsi Homogenitas pada Parameter Dispersi ($\sigma$)**
+Analisis variabilitas sering kali diabaikan dalam regresi standar, namun untuk mencapai pemahaman yang komprehensif, penyebaran data wajib diuji. Saat jarak persentil ke-10 dan ke-90 pada rentang usia 12 hingga 17 tahun dievaluasi, lebar interval tersebut tampak konsisten. Tidak ditemukan pola pelebaran varians yang mengindikasikan heteroskedastisitas sistematis seiring bertambahnya usia.
+
+Mengingat tidak ada bukti empiris yang menuntut penambahan kompleksitas pada parameter skala, langkah yang paling parsimoni diambil. Dispersi dimodelkan hanya dengan intersep:
+$\sigma = \text{konstan}$
+
+Spesifikasi `sigma.formula = ~ 1` ini merupakan titik tolak yang ideal. Jika evaluasi residual pada tahap diagnostik nanti membuktikan sebaliknya, barulah asumsi ini direvisi.
+
+**3. Penanganan Asimetri melalui Distribusi Box-Cox Cole-Green ($\nu$)**
+Langkah paling krusial yang diambil dalam spesifikasi ini adalah melepaskan asumsi normalitas. Evaluasi kuantil dengan jelas menunjukkan bahwa jarak Q90–Q50 lebih lebar daripada Q50–Q10. Terdapat *skewness* positif yang konsisten antar kelompok usia, fenomena yang secara biologis sangat rasional karena batas atas massa tubuh (obesitas) lebih tidak terbatas dibandingkan batas bawahnya (malnutrisi parah).
+
+Untuk mengakomodasi karakteristik ini secara elegan, distribusi `BCCG` (*Box-Cox Cole-Green*) ditetapkan sebagai keluarga distribusi dasar. Distribusi ini memungkinkan data untuk ditransformasikan menuju normalitas melalui parameter kemiringan ($\nu$). Karena derajat asimetri tersebut tampak stabil melintasi rentang umur, parameter bentuk ditetapkan sebagai konstanta:
+$\nu = \text{konstan}$
+
+Spesifikasi `nu.formula = ~ 1` memastikan bahwa model mampu mengenali kemiringan dalam data, tanpa mereduksi derajat kebebasan untuk memodelkannya sebagai fungsi dari usia.
+
+---
+
+**Kesimpulan Penetapan Model**
+Model $m_1$ yang dibangun bukanlah tebakan acak yang diserahkan sepenuhnya kepada algoritma komputer. Setiap baris sintaks—mulai dari `pb(umur)` hingga pemilihan `family = BCCG` merupakan terjemahan langsung dari struktur lokasi, skala, dan bentuk yang tersembunyi di dalam sebaran data observasional. Evaluasi diagnostik (*worm plot* dan residual kuantil acak) akan menjadi instrumen pengujian selanjutnya untuk memvalidasi apakah kerangka dasar ini mampu bertahan dari bias struktural yang tersisa.
