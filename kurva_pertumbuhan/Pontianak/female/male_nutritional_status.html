@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>VISUAL</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="male_nutritional_status_files/libs/clipboard/clipboard.min.js"></script>
+<script src="male_nutritional_status_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="male_nutritional_status_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="male_nutritional_status_files/libs/quarto-html/popper.min.js"></script>
+<script src="male_nutritional_status_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="male_nutritional_status_files/libs/quarto-html/anchor.min.js"></script>
+<link href="male_nutritional_status_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="male_nutritional_status_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="male_nutritional_status_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="male_nutritional_status_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="male_nutritional_status_files/libs/bootstrap/bootstrap-c6b836cf4e9ad4757f51e44ae26266b7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">VISUAL</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="e75d439d" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>library(readxl)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>library(writexl)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>library(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>library(dplyr)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>library(ggExtra)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>library(anthroplus)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>library(scales)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>library(knitr)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>library(officer)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>library(flextable)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>library(janitor)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># source('fungsi/bmi_calc.R')</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>source(<span class="st">'fungsi/bmi_calc2.R'</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>source(<span class="st">'fungsi/summary.R'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cc44faa4" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>male_data <span class="op">&lt;-</span> read_excel(<span class="st">"raw_data/male_data.xlsx"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>male_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div class="ansi-escaped-output">
+<pre><span style="color:rgb(148,148,148)"># A tibble: 827 × 8</span>
+   ks    tl                   umur sex      tb    bb    bf   bmi
+   <span style="font-style:italic;color:rgb(148,148,148)">&lt;chr&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;dttm&gt;</span>              <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;chr&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span>
+<span style="color:rgb(188,188,188)"> 1</span> SM71  2013-06-24 <span style="color:rgb(148,148,148)">00:00:00</span>  12.3 M      143   39.5  13.4  19.3
+<span style="color:rgb(188,188,188)"> 2</span> SM72  2012-10-01 <span style="color:rgb(148,148,148)">00:00:00</span>  13   M      148.  37.5  11.1  17.2
+<span style="color:rgb(188,188,188)"> 3</span> SM73  2012-12-22 <span style="color:rgb(148,148,148)">00:00:00</span>  12.8 M      158   41.8   8.1  16.7
+<span style="color:rgb(188,188,188)"> 4</span> SM74  2013-02-14 <span style="color:rgb(148,148,148)">00:00:00</span>  12.6 M      160   64.7  22    25.3
+<span style="color:rgb(188,188,188)"> 5</span> SM75  2013-04-30 <span style="color:rgb(148,148,148)">00:00:00</span>  12.4 M      145   45.3   0    21.5
+<span style="color:rgb(188,188,188)"> 6</span> SM76  2012-10-28 <span style="color:rgb(148,148,148)">00:00:00</span>  12.9 M      166.  69.5  27.8  25.1
+<span style="color:rgb(188,188,188)"> 7</span> SM77  2012-10-10 <span style="color:rgb(148,148,148)">00:00:00</span>  12.9 M      148   42.3  11.4  19.3
+<span style="color:rgb(188,188,188)"> 8</span> SM78  2013-03-27 <span style="color:rgb(148,148,148)">00:00:00</span>  12.5 M      156.  44.4  12.2  18.4
+<span style="color:rgb(188,188,188)"> 9</span> SM79  2013-02-02 <span style="color:rgb(148,148,148)">00:00:00</span>  12.7 M      148.  51.2  23.4  23.5
+<span style="color:rgb(188,188,188)">10</span> SM710 2012-05-20 <span style="color:rgb(148,148,148)">00:00:00</span>  13.3 M      160.  47.5  11.1  18.7
+<span style="color:rgb(148,148,148)"># ℹ 817 more rows</span>
+<span style="color:rgb(148,148,148)"># ℹ Use `print(n = ...)` to see more rows</span></pre>
+</div>
+</div>
+</div>
+<div id="3ddd4c86" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># menghitung z-scores dan kategori</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>male_results <span class="op">&lt;-</span> calculate_bmi_zscores(male_data, target_sex<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="83fd93ef" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>male_results</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="ansi-escaped-output">
+<pre><span style="color:rgb(148,148,148)"># A tibble: 827 × 18</span>
+   ks    tl                   umur sex      tb    bb    bf bmi_empiris umur_bulan bmi_who bmi_z_manual bmi_z_interp bmi_z_package
+   <span style="font-style:italic;color:rgb(148,148,148)">&lt;chr&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;dttm&gt;</span>              <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;chr&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span>       <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span>      <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span>   <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span>        <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span>        <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span>         <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span>
+<span style="color:rgb(188,188,188)"> 1</span> SM71  2013-06-24 <span style="color:rgb(148,148,148)">00:00:00</span>  12.3 M      143   39.5  13.4        19.3       148.    19.3       0.672        0.682           0.68
+<span style="color:rgb(188,188,188)"> 2</span> SM72  2012-10-01 <span style="color:rgb(148,148,148)">00:00:00</span>  13   M      148.  37.5  11.1        17.2       156     17.2      -<span class="ansi-red-fg">0</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">496</span>       -<span class="ansi-red-fg">0</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">496</span>          -<span class="ansi-red-fg">0</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">5</span> 
+<span style="color:rgb(188,188,188)"> 3</span> SM73  2012-12-22 <span style="color:rgb(148,148,148)">00:00:00</span>  12.8 M      158   41.8   8.1        16.7       154.    16.7      -<span class="ansi-red-fg">0</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">709</span>       -<span class="ansi-red-fg">0</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">697</span>          -<span class="ansi-red-fg">0</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">7</span> 
+<span style="color:rgb(188,188,188)"> 4</span> SM74  2013-02-14 <span style="color:rgb(148,148,148)">00:00:00</span>  12.6 M      160   64.7  22          25.3       151.    25.3       2.20         2.19            2.19
+<span style="color:rgb(188,188,188)"> 5</span> SM75  2013-04-30 <span style="color:rgb(148,148,148)">00:00:00</span>  12.4 M      145   45.3   0          21.5       149.    21.5       1.38         1.39            1.39
+<span style="color:rgb(188,188,188)"> 6</span> SM76  2012-10-28 <span style="color:rgb(148,148,148)">00:00:00</span>  12.9 M      166.  69.5  27.8        25.1       155.    25.1       2.08         2.09            2.09
+<span style="color:rgb(188,188,188)"> 7</span> SM77  2012-10-10 <span style="color:rgb(148,148,148)">00:00:00</span>  12.9 M      148   42.3  11.4        19.3       155.    19.3       0.487        0.492           0.49
+<span style="color:rgb(188,188,188)"> 8</span> SM78  2013-03-27 <span style="color:rgb(148,148,148)">00:00:00</span>  12.5 M      156.  44.4  12.2        18.4       150     18.4       0.226        0.226           0.23
+<span style="color:rgb(188,188,188)"> 9</span> SM79  2013-02-02 <span style="color:rgb(148,148,148)">00:00:00</span>  12.7 M      148.  51.2  23.4        23.5       152.    23.5       1.82         1.81            1.81
+<span style="color:rgb(188,188,188)">10</span> SM710 2012-05-20 <span style="color:rgb(148,148,148)">00:00:00</span>  13.3 M      160.  47.5  11.1        18.7       160.    18.7       0.082<span style="text-decoration:underline">3</span>       0.093<span style="text-decoration:underline">7</span>          0.09
+<span style="color:rgb(148,148,148)"># ℹ 817 more rows</span>
+<span style="color:rgb(148,148,148)"># ℹ 5 more variables: diff_manual_pkg &lt;dbl&gt;, diff_interp_pkg &lt;dbl&gt;, cat_manual &lt;ord&gt;, cat_interp &lt;ord&gt;, cat_package &lt;ord&gt;</span>
+<span style="color:rgb(148,148,148)"># ℹ Use `print(n = ...)` to see more rows</span></pre>
+</div>
+</div>
+</div>
+<div id="b85b172d" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>summarize_categorical(male_results, <span class="st">"cat_package"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div class="ansi-escaped-output">
+<pre><span style="color:rgb(148,148,148)"># A tibble: 7 × 3</span>
+  Category     Freq Percentage
+  <span style="font-style:italic;color:rgb(148,148,148)">&lt;chr&gt;</span>       <span style="font-style:italic;color:rgb(148,148,148)">&lt;int&gt;</span>      <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span>
+<span style="color:rgb(188,188,188)">1</span> Gizi Buruk     25        3  
+<span style="color:rgb(188,188,188)">2</span> Gizi Kurang    87       10.5
+<span style="color:rgb(188,188,188)">3</span> Gizi Normal   524       63.4
+<span style="color:rgb(188,188,188)">4</span> Gizi Lebih    110       13.3
+<span style="color:rgb(188,188,188)">5</span> Obesitas       75        9.1
+<span style="color:rgb(188,188,188)">6</span> NA              6        0.7
+<span style="color:rgb(188,188,188)">7</span> Total         827      100  </pre>
+</div>
+</div>
+</div>
+<div id="8d14aede" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>summarize_categorical(male_results, <span class="st">"cat_package"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="ansi-escaped-output">
+<pre><span style="color:rgb(148,148,148)"># A tibble: 7 × 5</span>
+  Category    Jumlah Percentage Kategori Persentase
+  <span style="font-style:italic;color:rgb(148,148,148)">&lt;chr&gt;</span>        <span style="font-style:italic;color:rgb(148,148,148)">&lt;int&gt;</span>      <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span> <span style="font-style:italic;color:rgb(148,148,148)">&lt;chr&gt;</span>         <span style="font-style:italic;color:rgb(148,148,148)">&lt;dbl&gt;</span>
+<span style="color:rgb(188,188,188)">1</span> Gizi Buruk      25        3   <span class="ansi-red-fg">NA</span>               <span class="ansi-red-fg">NA</span>
+<span style="color:rgb(188,188,188)">2</span> Gizi Kurang     87       10.5 <span class="ansi-red-fg">NA</span>               <span class="ansi-red-fg">NA</span>
+<span style="color:rgb(188,188,188)">3</span> Gizi Normal    524       63.4 <span class="ansi-red-fg">NA</span>               <span class="ansi-red-fg">NA</span>
+<span style="color:rgb(188,188,188)">4</span> Gizi Lebih     110       13.3 <span class="ansi-red-fg">NA</span>               <span class="ansi-red-fg">NA</span>
+<span style="color:rgb(188,188,188)">5</span> Obesitas        75        9.1 <span class="ansi-red-fg">NA</span>               <span class="ansi-red-fg">NA</span>
+<span style="color:rgb(188,188,188)">6</span> NA               6        0.7 <span class="ansi-red-fg">NA</span>               <span class="ansi-red-fg">NA</span>
+<span style="color:rgb(188,188,188)">7</span> <span class="ansi-red-fg">NA</span>             827       <span class="ansi-red-fg">NA</span>   Total           100</pre>
+</div>
+</div>
+</div>
+<div id="ddc70abb" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>summarize_continuous(male_results, <span class="st">"bmi_z_package"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="ansi-escaped-output">
+<pre><span style="color:rgb(148,148,148)"># A tibble: 5 × 2</span>
+  Statistic    Value                 
+  <span style="font-style:italic;color:rgb(148,148,148)">&lt;chr&gt;</span>        <span style="font-style:italic;color:rgb(148,148,148)">&lt;chr&gt;</span>                 
+<span style="color:rgb(188,188,188)">1</span> N            821                   
+<span style="color:rgb(188,188,188)">2</span> Mean ± SD    -0.242 ± 1.583        
+<span style="color:rgb(188,188,188)">3</span> Median (IQR) -0.340 (-1.340, 0.850)
+<span style="color:rgb(188,188,188)">4</span> Minimum      -5.59                 
+<span style="color:rgb(188,188,188)">5</span> Maximum      4.14                  </pre>
+</div>
+</div>
+</div>
+<div id="7cb3d8a2" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plot_bmi_comprehensive <span class="op">&lt;-</span> function(df, bmi_col) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>requireNamespace(<span class="st">"patchwork"</span>, quietly <span class="op">=</span> TRUE)) install.packages(<span class="st">"patchwork"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>requireNamespace(<span class="st">"e1071"</span>, quietly <span class="op">=</span> TRUE)) install.packages(<span class="st">"e1071"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  library(ggplot2)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  library(patchwork)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  library(e1071)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ==========================================</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 1. Statistik &amp; Preparasi Data</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ==========================================</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  x <span class="op">&lt;-</span> df[[bmi_col]][<span class="op">!</span><span class="kw">is</span>.na(df[[bmi_col]])]</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  m_mean   <span class="op">&lt;-</span> mean(x)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  m_median <span class="op">&lt;-</span> median(x)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  m_sd     <span class="op">&lt;-</span> sd(x)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  m_skew   <span class="op">&lt;-</span> skewness(x)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  x_min <span class="op">&lt;-</span> <span class="bu">min</span>(x)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  x_max <span class="op">&lt;-</span> <span class="bu">max</span>(x)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Densitas untuk Kurva Normal</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  x_range <span class="op">&lt;-</span> seq(x_min, x_max, length.out <span class="op">=</span> <span class="dv">500</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  y_norm  <span class="op">&lt;-</span> dnorm(x_range, mean <span class="op">=</span> m_mean, sd <span class="op">=</span> m_sd)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  df_norm <span class="op">&lt;-</span> data.frame(x <span class="op">=</span> x_range, y <span class="op">=</span> y_norm)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  shade_sd <span class="op">&lt;-</span> subset(df_norm, x <span class="op">&gt;=</span> (m_mean <span class="op">-</span> m_sd) <span class="op">&amp;</span> x <span class="op">&lt;=</span> (m_mean <span class="op">+</span> m_sd))</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Sinkronisasi sumbu Y</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  dens <span class="op">&lt;-</span> density(x)</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>  y_max <span class="op">&lt;-</span> <span class="bu">max</span>(<span class="bu">max</span>(dens$y), <span class="bu">max</span>(y_norm)) <span class="op">*</span> <span class="fl">1.15</span> </span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ==========================================</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 2. LOGIKA ANOTASI SKEWNESS OTOMATIS (ENGLISH)</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ==========================================</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>  is_right_skew <span class="op">&lt;-</span> m_skew <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>  skew_label <span class="op">&lt;-</span> ifelse(is_right_skew, </span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"Right-Skewed</span><span class="ch">\n</span><span class="st">(Positive Tail)"</span>, </span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"Left-Skewed</span><span class="ch">\n</span><span class="st">(Negative Tail)"</span>)</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Penempatan teks (30% dari ujung ekor)</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>  text_x <span class="op">&lt;-</span> ifelse(is_right_skew, </span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>                   x_max <span class="op">-</span> (x_max <span class="op">-</span> m_mean) <span class="op">*</span> <span class="fl">0.3</span>, </span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>                   x_min <span class="op">+</span> (m_mean <span class="op">-</span> x_min) <span class="op">*</span> <span class="fl">0.3</span>)</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>  text_y <span class="op">&lt;-</span> y_max <span class="op">*</span> <span class="fl">0.5</span> <span class="co"># Tinggi teks</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ujung panah menunjuk ke 10% area paling ekstrem</span></span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>  arrow_x <span class="op">&lt;-</span> ifelse(is_right_skew, </span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>                    x_max <span class="op">-</span> (x_max <span class="op">-</span> m_mean) <span class="op">*</span> <span class="fl">0.1</span>, </span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>                    x_min <span class="op">+</span> (m_mean <span class="op">-</span> x_min) <span class="op">*</span> <span class="fl">0.1</span>)</span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>  arrow_y <span class="op">&lt;-</span> y_max <span class="op">*</span> <span class="fl">0.05</span> </span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ==========================================</span></span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 3. PLOT KIRI: Empiris </span></span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ==========================================</span></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>  p1 <span class="op">&lt;-</span> ggplot(df, aes(x <span class="op">=</span> .data[[bmi_col]])) <span class="op">+</span></span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>    geom_histogram(</span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>      aes(y <span class="op">=</span> after_stat(density)), </span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>      binwidth <span class="op">=</span> <span class="fl">0.5</span>, boundary <span class="op">=</span> <span class="dv">0</span>, fill <span class="op">=</span> <span class="st">"#A8B8C6"</span>, color <span class="op">=</span> <span class="st">"white"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, na.rm <span class="op">=</span> TRUE</span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>    geom_density(aes(color <span class="op">=</span> <span class="st">"Empirical Density"</span>), linewidth <span class="op">=</span> <span class="fl">1.2</span>, key_glyph <span class="op">=</span> <span class="st">"path"</span>, na.rm <span class="op">=</span> TRUE) <span class="op">+</span></span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>    geom_vline(aes(xintercept <span class="op">=</span> m_mean, color <span class="op">=</span> <span class="st">"Mean"</span>), linewidth <span class="op">=</span> <span class="fl">1.2</span>, linetype <span class="op">=</span> <span class="st">"solid"</span>) <span class="op">+</span></span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>    geom_vline(aes(xintercept <span class="op">=</span> m_median, color <span class="op">=</span> <span class="st">"Median"</span>), linewidth <span class="op">=</span> <span class="fl">1.2</span>, linetype <span class="op">=</span> <span class="st">"solid"</span>) <span class="op">+</span></span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Anotasi Teks Otomatis</span></span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>    annotate(</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a>      <span class="st">"text"</span>, x <span class="op">=</span> text_x, y <span class="op">=</span> text_y, label <span class="op">=</span> skew_label, </span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>      color <span class="op">=</span> <span class="st">"#5c5c5c"</span>, fontface <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Panah Dinamis</span></span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>    annotate(</span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a>      <span class="st">"curve"</span>, x <span class="op">=</span> text_x, y <span class="op">=</span> text_y <span class="op">-</span> (y_max <span class="op">*</span> <span class="fl">0.03</span>), xend <span class="op">=</span> arrow_x, yend <span class="op">=</span> arrow_y,</span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>      curvature <span class="op">=</span> ifelse(is_right_skew, <span class="fl">0.3</span>, <span class="op">-</span><span class="fl">0.3</span>), </span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a>      arrow <span class="op">=</span> arrow(length <span class="op">=</span> unit(<span class="fl">0.25</span>, <span class="st">"cm"</span>), <span class="bu">type</span> <span class="op">=</span> <span class="st">"closed"</span>), </span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>      color <span class="op">=</span> <span class="st">"#5c5c5c"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span></span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>    scale_color_manual(values <span class="op">=</span> c(<span class="st">"Empirical Density"</span> <span class="op">=</span> <span class="st">"#2F4858"</span>, <span class="st">"Mean"</span> <span class="op">=</span> <span class="st">"#336699"</span>, <span class="st">"Median"</span> <span class="op">=</span> <span class="st">"#CC6600"</span>)) <span class="op">+</span></span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a>    coord_cartesian(xlim <span class="op">=</span> c(x_min, x_max), ylim <span class="op">=</span> c(<span class="dv">0</span>, y_max)) <span class="op">+</span></span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a>      title <span class="op">=</span> <span class="st">"Empirical Distribution"</span>,</span>
+<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a>      subtitle <span class="op">=</span> sprintf(<span class="st">"Skewness: </span><span class="sc">%.3f</span><span class="st"> | Central Tendency"</span>, m_skew),</span>
+<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a>      x <span class="op">=</span> expression(Z<span class="op">-</span>Score<span class="op">~</span>BMI), y <span class="op">=</span> <span class="st">"Density"</span></span>
+<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a>    theme_classic(base_size <span class="op">=</span> <span class="dv">13</span>) <span class="op">+</span></span>
+<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a>    theme(legend.position <span class="op">=</span> <span class="st">"bottom"</span>, legend.title <span class="op">=</span> element_blank())</span>
+<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ==========================================</span></span>
+<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 4. PLOT KANAN: Normal Teoretis</span></span>
+<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ==========================================</span></span>
+<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a>  p2 <span class="op">&lt;-</span> ggplot(df_norm, aes(x <span class="op">=</span> x, y <span class="op">=</span> y)) <span class="op">+</span></span>
+<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a>    geom_area(data <span class="op">=</span> shade_sd, aes(x <span class="op">=</span> x, y <span class="op">=</span> y, fill <span class="op">=</span> <span class="st">"±1 SD (68.3%)"</span>), alpha <span class="op">=</span> <span class="fl">0.3</span>) <span class="op">+</span></span>
+<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a>    geom_line(aes(color <span class="op">=</span> <span class="st">"Normal Curve"</span>), linewidth <span class="op">=</span> <span class="fl">1.2</span>) <span class="op">+</span></span>
+<span id="cb8-96"><a href="#cb8-96" aria-hidden="true" tabindex="-1"></a>    geom_vline(xintercept <span class="op">=</span> c(m_mean <span class="op">-</span> m_sd, m_mean <span class="op">+</span> m_sd), color <span class="op">=</span> <span class="st">"#D1495B"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span>) <span class="op">+</span></span>
+<span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a>    geom_vline(aes(xintercept <span class="op">=</span> m_mean, color <span class="op">=</span> <span class="st">"Mean (Center)"</span>), linewidth <span class="op">=</span> <span class="fl">1.2</span>) <span class="op">+</span></span>
+<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a>    scale_color_manual(values <span class="op">=</span> c(<span class="st">"Normal Curve"</span> <span class="op">=</span> <span class="st">"#D1495B"</span>, <span class="st">"Mean (Center)"</span> <span class="op">=</span> <span class="st">"#336699"</span>)) <span class="op">+</span></span>
+<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a>    scale_fill_manual(values <span class="op">=</span> c(<span class="st">"±1 SD (68.3%)"</span> <span class="op">=</span> <span class="st">"#D1495B"</span>)) <span class="op">+</span></span>
+<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a>    coord_cartesian(xlim <span class="op">=</span> c(x_min, x_max), ylim <span class="op">=</span> c(<span class="dv">0</span>, y_max)) <span class="op">+</span></span>
+<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb8-103"><a href="#cb8-103" aria-hidden="true" tabindex="-1"></a>      title <span class="op">=</span> <span class="st">"Theoretical Normal Model"</span>,</span>
+<span id="cb8-104"><a href="#cb8-104" aria-hidden="true" tabindex="-1"></a>      subtitle <span class="op">=</span> sprintf(<span class="st">"SD: </span><span class="sc">%.2f</span><span class="st"> | Expected Variance"</span>, m_sd),</span>
+<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a>      x <span class="op">=</span> expression(Z<span class="op">-</span>Score<span class="op">~</span>BMI), y <span class="op">=</span> <span class="st">""</span> </span>
+<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a>    theme_classic(base_size <span class="op">=</span> <span class="dv">13</span>) <span class="op">+</span></span>
+<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a>    theme(</span>
+<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a>      legend.position <span class="op">=</span> <span class="st">"bottom"</span>, </span>
+<span id="cb8-110"><a href="#cb8-110" aria-hidden="true" tabindex="-1"></a>      legend.title <span class="op">=</span> element_blank(),</span>
+<span id="cb8-111"><a href="#cb8-111" aria-hidden="true" tabindex="-1"></a>      axis.text.y <span class="op">=</span> element_blank(), </span>
+<span id="cb8-112"><a href="#cb8-112" aria-hidden="true" tabindex="-1"></a>      axis.ticks.y <span class="op">=</span> element_blank(),</span>
+<span id="cb8-113"><a href="#cb8-113" aria-hidden="true" tabindex="-1"></a>      axis.line.y <span class="op">=</span> element_blank()</span>
+<span id="cb8-114"><a href="#cb8-114" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-115"><a href="#cb8-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-116"><a href="#cb8-116" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ==========================================</span></span>
+<span id="cb8-117"><a href="#cb8-117" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 5. PENGGABUNGAN </span></span>
+<span id="cb8-118"><a href="#cb8-118" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ==========================================</span></span>
+<span id="cb8-119"><a href="#cb8-119" aria-hidden="true" tabindex="-1"></a>  final_plot <span class="op">&lt;-</span> p1 <span class="op">+</span> p2 <span class="op">+</span> </span>
+<span id="cb8-120"><a href="#cb8-120" aria-hidden="true" tabindex="-1"></a>    plot_annotation(</span>
+<span id="cb8-121"><a href="#cb8-121" aria-hidden="true" tabindex="-1"></a>      title <span class="op">=</span> <span class="st">"BMI Distribution Audit: Empirical vs. Theoretical Expectation"</span>,</span>
+<span id="cb8-122"><a href="#cb8-122" aria-hidden="true" tabindex="-1"></a>      theme <span class="op">=</span> theme(plot.title <span class="op">=</span> element_text(face <span class="op">=</span> <span class="st">"bold"</span>, hjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="dv">16</span>))</span>
+<span id="cb8-123"><a href="#cb8-123" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-124"><a href="#cb8-124" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-125"><a href="#cb8-125" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span>(final_plot)</span>
+<span id="cb8-126"><a href="#cb8-126" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="64c473f6" class="cell" data-execution_count="89">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>male_bmi_density <span class="op">&lt;-</span> plot_bmi_comprehensive(df<span class="op">=</span>male_results, bmi_col <span class="op">=</span> <span class="st">"bmi_z_package"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>male_bmi_density</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="male_nutritional_status_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="73ed58e9" class="cell" data-execution_count="92">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ggsave(<span class="st">"plot/male_density_curve.png"</span>, male_bmi_density, width <span class="op">=</span> <span class="dv">10</span>, height <span class="op">=</span> <span class="dv">8</span>, units <span class="op">=</span> <span class="st">"in"</span>, dpi<span class="op">=</span><span class="dv">1200</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="1b1ab011" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>generate_who_charts <span class="op">&lt;-</span> function(data, </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                                category_col, </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                                bmi_col <span class="op">=</span> <span class="st">"bmi_empiris"</span>, </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                                age_col <span class="op">=</span> <span class="st">"umur_bulan"</span>, </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                                target_sex <span class="op">=</span> <span class="dv">1</span>) {</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># =====================================================================</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 1. PENYIAPAN DATA &amp; STANDARISASI KOLOM</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># =====================================================================</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  plot_df <span class="op">&lt;-</span> data <span class="op">%&gt;%</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    rename(</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>      val_bmi <span class="op">=</span> all_of(bmi_col),</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>      val_age <span class="op">=</span> all_of(age_col)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">%&gt;%</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">filter</span>(<span class="op">!</span><span class="kw">is</span>.na(val_bmi), <span class="op">!</span><span class="kw">is</span>.na(val_age), <span class="op">!</span><span class="kw">is</span>.na(.data[[category_col]]))</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  who_lms <span class="op">&lt;-</span> anthroplus:::bfa_growth_standards <span class="op">%&gt;%</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">filter</span>(sex <span class="op">==</span> target_sex) <span class="op">%&gt;%</span> arrange(age)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  who_curves <span class="op">&lt;-</span> who_lms <span class="op">%&gt;%</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    mutate(</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>      z_m3 <span class="op">=</span> m <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> l<span class="op">*</span>s<span class="op">*</span>(<span class="op">-</span><span class="dv">3</span>))<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span>l), z_m2 <span class="op">=</span> m <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> l<span class="op">*</span>s<span class="op">*</span>(<span class="op">-</span><span class="dv">2</span>))<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span>l),</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>      z_m1 <span class="op">=</span> m <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> l<span class="op">*</span>s<span class="op">*</span>(<span class="op">-</span><span class="dv">1</span>))<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span>l), z_0  <span class="op">=</span> m,</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>      z_p1 <span class="op">=</span> m <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> l<span class="op">*</span>s<span class="op">*</span>(<span class="dv">1</span>))<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span>l), z_p2 <span class="op">=</span> m <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> l<span class="op">*</span>s<span class="op">*</span>(<span class="dv">2</span>))<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span>l),</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>      z_p3 <span class="op">=</span> m <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> l<span class="op">*</span>s<span class="op">*</span>(<span class="dv">3</span>))<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span>l)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  min_bound <span class="op">&lt;-</span> floor(<span class="bu">min</span>(c(plot_df$val_bmi, who_curves$z_m3), na.rm <span class="op">=</span> TRUE)) <span class="op">-</span> <span class="dv">2</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>  max_bound <span class="op">&lt;-</span> ceiling(<span class="bu">max</span>(c(plot_df$val_bmi, who_curves$z_p3), na.rm <span class="op">=</span> TRUE)) <span class="op">+</span> <span class="dv">2</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  zone_df <span class="op">&lt;-</span> who_curves <span class="op">%&gt;%</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    transmute(</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>      age, zm3 <span class="op">=</span> z_m3, zm2 <span class="op">=</span> z_m2, zp1 <span class="op">=</span> z_p1, zp2 <span class="op">=</span> z_p2,</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>      ymin <span class="op">=</span> min_bound, ymax <span class="op">=</span> max_bound</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>  status_levels <span class="op">&lt;-</span> c(<span class="st">"Gizi Buruk"</span>, <span class="st">"Gizi Kurang"</span>, <span class="st">"Gizi Normal"</span>, <span class="st">"Gizi Lebih"</span>, <span class="st">"Obesitas"</span>)</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>  cat_table <span class="op">&lt;-</span> plot_df <span class="op">%&gt;%</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>    mutate(<span class="op">!!</span>sym(category_col) <span class="op">:=</span> factor(.data[[category_col]], levels <span class="op">=</span> status_levels)) <span class="op">%&gt;%</span></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>    group_by(.data[[category_col]]) <span class="op">%&gt;%</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>    summarise(n <span class="op">=</span> n(), .groups <span class="op">=</span> <span class="st">"drop"</span>) <span class="op">%&gt;%</span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>    arrange(.data[[category_col]]) <span class="op">%&gt;%</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>    mutate(pct <span class="op">=</span> <span class="bu">round</span>(<span class="dv">100</span> <span class="op">*</span> n <span class="op">/</span> <span class="bu">sum</span>(n), <span class="dv">1</span>))</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>  legend_labels <span class="op">&lt;-</span> setNames(</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>    paste0(cat_table[[category_col]], <span class="st">" ("</span>, cat_table$pct, <span class="st">"%)"</span>),</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>    cat_table[[category_col]]</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>  label_df <span class="op">&lt;-</span> data.frame(</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>    age <span class="op">=</span> <span class="bu">max</span>(who_curves$age) <span class="op">+</span> <span class="dv">3</span>,</span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>    val_bmi <span class="op">=</span> c(</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>      dplyr::last(who_curves$z_m3), dplyr::last(who_curves$z_m2), dplyr::last(who_curves$z_m1),</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>      dplyr::last(who_curves$z_0),  dplyr::last(who_curves$z_p1), dplyr::last(who_curves$z_p2),</span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>      dplyr::last(who_curves$z_p3)</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> c(<span class="st">"-3"</span>, <span class="st">"-2"</span>, <span class="st">"-1"</span>, <span class="st">"0"</span>, <span class="st">"+1"</span>, <span class="st">"+2"</span>, <span class="st">"+3"</span>)</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>  who_curves_long <span class="op">&lt;-</span> who_curves <span class="op">%&gt;%</span></span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>    pivot_longer(cols <span class="op">=</span> starts_with(<span class="st">"z_"</span>), names_to <span class="op">=</span> <span class="st">"curve"</span>, values_to <span class="op">=</span> <span class="st">"value"</span>) <span class="op">%&gt;%</span></span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>    mutate(curve <span class="op">=</span> factor(curve, levels <span class="op">=</span> c(<span class="st">"z_m3"</span>, <span class="st">"z_m2"</span>, <span class="st">"z_m1"</span>, <span class="st">"z_0"</span>, <span class="st">"z_p1"</span>, <span class="st">"z_p2"</span>, <span class="st">"z_p3"</span>)))</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a>  <span class="co"># =====================================================================</span></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 2. MESIN DETEKSI EKSPLOSI SE MATEMATIS (TWO-TAILED)</span></span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>  <span class="co"># =====================================================================</span></span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>  loess_model <span class="op">&lt;-</span> loess(val_bmi <span class="op">~</span> val_age, data <span class="op">=</span> plot_df, span <span class="op">=</span> <span class="fl">0.9</span>, </span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>                       control <span class="op">=</span> loess.control(surface <span class="op">=</span> <span class="st">"direct"</span>))</span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>  age_seq <span class="op">&lt;-</span> sort(unique(plot_df$val_age))</span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>  loess_pred <span class="op">&lt;-</span> predict(loess_model, newdata <span class="op">=</span> data.frame(val_age <span class="op">=</span> age_seq), se <span class="op">=</span> TRUE)</span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>  se_values <span class="op">&lt;-</span> loess_pred$se.fit</span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>  se_baseline <span class="op">&lt;-</span> median(se_values, na.rm <span class="op">=</span> TRUE)</span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>  se_mad <span class="op">&lt;-</span> mad(se_values, na.rm <span class="op">=</span> TRUE)</span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>  se_threshold <span class="op">&lt;-</span> se_baseline <span class="op">+</span> (<span class="dv">3</span> <span class="op">*</span> se_mad) </span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>  mid_age <span class="op">&lt;-</span> median(age_seq, na.rm <span class="op">=</span> TRUE)</span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Deteksi ledakan di Sayap Kanan (Usia Tinggi)</span></span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>  upper_explosion <span class="op">&lt;-</span> age_seq[age_seq <span class="op">&gt;</span> mid_age <span class="op">&amp;</span> se_values <span class="op">&gt;</span> se_threshold]</span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>  dynamic_upper_cutoff <span class="op">&lt;-</span> <span class="cf">if</span> (length(upper_explosion) <span class="op">&gt;</span> <span class="dv">0</span>) <span class="bu">min</span>(upper_explosion) <span class="cf">else</span> <span class="bu">max</span>(age_seq, na.rm <span class="op">=</span> TRUE)</span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Deteksi ledakan di Sayap Kiri (Usia Rendah)</span></span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>  lower_explosion <span class="op">&lt;-</span> age_seq[age_seq <span class="op">&lt;</span> mid_age <span class="op">&amp;</span> se_values <span class="op">&gt;</span> se_threshold]</span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Kita ambil nilai *maximum* dari sayap kiri sebagai batas, karena itu adalah titik persis sebelum data stabil</span></span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>  dynamic_lower_cutoff <span class="op">&lt;-</span> <span class="cf">if</span> (length(lower_explosion) <span class="op">&gt;</span> <span class="dv">0</span>) <span class="bu">max</span>(lower_explosion) <span class="cf">else</span> <span class="bu">min</span>(age_seq, na.rm <span class="op">=</span> TRUE)</span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>  max_bmi <span class="op">&lt;-</span> <span class="bu">max</span>(plot_df$val_bmi, na.rm <span class="op">=</span> TRUE)</span>
+<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>  min_bmi <span class="op">&lt;-</span> <span class="bu">min</span>(plot_df$val_bmi, na.rm <span class="op">=</span> TRUE)</span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>  <span class="co"># =====================================================================</span></span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 3. PENGATURAN PLOT</span></span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a>  <span class="co"># =====================================================================</span></span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>  master_colors <span class="op">&lt;-</span> c(</span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gizi Buruk"</span> <span class="op">=</span> <span class="st">"#31688e"</span>, <span class="st">"Gizi Kurang"</span> <span class="op">=</span> <span class="st">"#639bb4"</span>, <span class="st">"Gizi Normal"</span> <span class="op">=</span> <span class="st">"#d9d9d9"</span>,</span>
+<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gizi Lebih"</span> <span class="op">=</span> <span class="st">"#e07a5f"</span>, <span class="st">"Obesitas"</span> <span class="op">=</span> <span class="st">"#b11226"</span></span>
+<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a>  shared_layers <span class="op">&lt;-</span> <span class="bu">list</span>(</span>
+<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a>    geom_point(data <span class="op">=</span> plot_df, aes(val_age, val_bmi, fill <span class="op">=</span> .data[[category_col]]), shape <span class="op">=</span> <span class="dv">21</span>, color <span class="op">=</span> <span class="st">"white"</span>, alpha <span class="op">=</span> <span class="fl">0.8</span>, size <span class="op">=</span> <span class="fl">2.8</span>),</span>
+<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a>    geom_text(data <span class="op">=</span> label_df, aes(age, val_bmi, label <span class="op">=</span> label), hjust <span class="op">=</span> <span class="dv">0</span>, size <span class="op">=</span> <span class="dv">5</span>),</span>
+<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>    scale_fill_manual(values <span class="op">=</span> master_colors, labels <span class="op">=</span> legend_labels),</span>
+<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a>    coord_cartesian(xlim <span class="op">=</span> c(<span class="bu">min</span>(who_curves$age), <span class="bu">max</span>(who_curves$age) <span class="op">+</span> <span class="dv">15</span>)),</span>
+<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>    scale_x_continuous(expand <span class="op">=</span> expansion(mult <span class="op">=</span> c(<span class="dv">0</span>, <span class="fl">0.08</span>))),</span>
+<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>    theme_classic(base_size <span class="op">=</span> <span class="dv">16</span>),</span>
+<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a>    theme(legend.position <span class="op">=</span> <span class="st">"bottom"</span>, legend.title <span class="op">=</span> element_blank()),</span>
+<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a>    labs(subtitle <span class="op">=</span> NULL, x <span class="op">=</span> <span class="st">"Age (months)"</span>, y <span class="op">=</span> expression(BMI<span class="op">~</span>(kg<span class="op">/</span>m<span class="op">^</span><span class="dv">2</span>)))</span>
+<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a>  clean_colors <span class="op">&lt;-</span> c(<span class="st">"z_m3"</span><span class="op">=</span><span class="st">"#31688e"</span>, <span class="st">"z_m2"</span><span class="op">=</span><span class="st">"#639bb4"</span>, <span class="st">"z_m1"</span><span class="op">=</span><span class="st">"grey50"</span>, <span class="st">"z_0"</span><span class="op">=</span><span class="st">"grey40"</span>, <span class="st">"z_p1"</span><span class="op">=</span><span class="st">"grey50"</span>, <span class="st">"z_p2"</span><span class="op">=</span><span class="st">"#e07a5f"</span>, <span class="st">"z_p3"</span><span class="op">=</span><span class="st">"#b11226"</span>)</span>
+<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a>  clean_lines  <span class="op">&lt;-</span> c(<span class="st">"z_m3"</span><span class="op">=</span><span class="st">"solid"</span>, <span class="st">"z_m2"</span><span class="op">=</span><span class="st">"solid"</span>, <span class="st">"z_m1"</span><span class="op">=</span><span class="st">"dotted"</span>, <span class="st">"z_0"</span><span class="op">=</span><span class="st">"solid"</span>, <span class="st">"z_p1"</span><span class="op">=</span><span class="st">"dotted"</span>, <span class="st">"z_p2"</span><span class="op">=</span><span class="st">"solid"</span>, <span class="st">"z_p3"</span><span class="op">=</span><span class="st">"solid"</span>)</span>
+<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a>  clean_sizes  <span class="op">&lt;-</span> c(<span class="st">"z_m3"</span><span class="op">=</span><span class="fl">0.7</span>, <span class="st">"z_m2"</span><span class="op">=</span><span class="fl">0.7</span>, <span class="st">"z_m1"</span><span class="op">=</span><span class="fl">0.6</span>, <span class="st">"z_0"</span><span class="op">=</span><span class="fl">1.0</span>, <span class="st">"z_p1"</span><span class="op">=</span><span class="fl">0.6</span>, <span class="st">"z_p2"</span><span class="op">=</span><span class="fl">0.7</span>, <span class="st">"z_p3"</span><span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a>  base_clean_plot <span class="op">&lt;-</span> ggplot() <span class="op">+</span></span>
+<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>    geom_line(data <span class="op">=</span> who_curves_long, aes(age, value, group <span class="op">=</span> curve, color <span class="op">=</span> curve, linetype <span class="op">=</span> curve, linewidth <span class="op">=</span> curve)) <span class="op">+</span></span>
+<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a>    scale_color_manual(values <span class="op">=</span> clean_colors) <span class="op">+</span> scale_linetype_manual(values <span class="op">=</span> clean_lines) <span class="op">+</span> scale_linewidth_manual(values <span class="op">=</span> clean_sizes) <span class="op">+</span></span>
+<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a>    guides(color <span class="op">=</span> <span class="st">"none"</span>, linetype <span class="op">=</span> <span class="st">"none"</span>, linewidth <span class="op">=</span> <span class="st">"none"</span>) <span class="op">+</span></span>
+<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>    shared_layers</span>
+<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>  <span class="co"># --- PLOT 1: FULL LOESS DENGAN ANOTASI DUA SISI ---</span></span>
+<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a>  plot_clean_full <span class="op">&lt;-</span> base_clean_plot <span class="op">+</span></span>
+<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Garis &amp; Anotasi Upper Cutoff</span></span>
+<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>    geom_vline(xintercept <span class="op">=</span> dynamic_upper_cutoff, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span>) <span class="op">+</span></span>
+<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a>    annotate(<span class="st">"segment"</span>, x <span class="op">=</span> dynamic_upper_cutoff <span class="op">-</span> <span class="dv">20</span>, xend <span class="op">=</span> dynamic_upper_cutoff <span class="op">-</span> <span class="dv">1</span>, </span>
+<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>             y <span class="op">=</span> max_bmi, yend <span class="op">=</span> max_bmi, </span>
+<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>             arrow <span class="op">=</span> arrow(length <span class="op">=</span> unit(<span class="fl">0.2</span>, <span class="st">"cm"</span>), <span class="bu">type</span> <span class="op">=</span> <span class="st">"closed"</span>), </span>
+<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a>             color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span>) <span class="op">+</span></span>
+<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>    annotate(<span class="st">"text"</span>, x <span class="op">=</span> dynamic_upper_cutoff <span class="op">-</span> <span class="dv">22</span>, y <span class="op">=</span> max_bmi, </span>
+<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a>             label <span class="op">=</span> sprintf(<span class="st">"Upper Cutoff:</span><span class="ch">\n</span><span class="st">SE &gt; 3 MAD</span><span class="ch">\n</span><span class="st">at </span><span class="sc">%.1f</span><span class="st"> mo"</span>, dynamic_upper_cutoff), </span>
+<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a>             hjust <span class="op">=</span> <span class="dv">1</span>, size <span class="op">=</span> <span class="dv">4</span>, fontface <span class="op">=</span> <span class="st">"italic"</span>, lineheight <span class="op">=</span> <span class="fl">1.1</span>) <span class="op">+</span></span>
+<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a>             </span>
+<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Garis &amp; Anotasi Lower Cutoff</span></span>
+<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a>    geom_vline(xintercept <span class="op">=</span> dynamic_lower_cutoff, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span>) <span class="op">+</span></span>
+<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a>    annotate(<span class="st">"segment"</span>, x <span class="op">=</span> dynamic_lower_cutoff <span class="op">+</span> <span class="dv">20</span>, xend <span class="op">=</span> dynamic_lower_cutoff <span class="op">+</span> <span class="dv">1</span>, </span>
+<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a>             y <span class="op">=</span> max_bmi <span class="op">-</span> <span class="dv">3</span>, yend <span class="op">=</span> max_bmi <span class="op">-</span> <span class="dv">3</span>, <span class="co"># Diletakkan sedikit lebih rendah agar tidak tabrakan</span></span>
+<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a>             arrow <span class="op">=</span> arrow(length <span class="op">=</span> unit(<span class="fl">0.2</span>, <span class="st">"cm"</span>), <span class="bu">type</span> <span class="op">=</span> <span class="st">"closed"</span>), </span>
+<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a>             color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span>) <span class="op">+</span></span>
+<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a>    annotate(<span class="st">"text"</span>, x <span class="op">=</span> dynamic_lower_cutoff <span class="op">+</span> <span class="dv">22</span>, y <span class="op">=</span> max_bmi <span class="op">-</span> <span class="dv">3</span>, </span>
+<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a>             label <span class="op">=</span> sprintf(<span class="st">"Lower Cutoff:</span><span class="ch">\n</span><span class="st">SE &gt; 3 MAD</span><span class="ch">\n</span><span class="st">at </span><span class="sc">%.1f</span><span class="st"> mo"</span>, dynamic_lower_cutoff), </span>
+<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a>             hjust <span class="op">=</span> <span class="dv">0</span>, size <span class="op">=</span> <span class="dv">4</span>, fontface <span class="op">=</span> <span class="st">"italic"</span>, lineheight <span class="op">=</span> <span class="fl">1.1</span>) <span class="op">+</span></span>
+<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a>             </span>
+<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a>    geom_smooth(data <span class="op">=</span> plot_df, aes(val_age, val_bmi), method <span class="op">=</span> <span class="st">"loess"</span>, span <span class="op">=</span> <span class="fl">0.9</span>, </span>
+<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a>                se <span class="op">=</span> TRUE, fill <span class="op">=</span> <span class="st">"grey60"</span>, alpha <span class="op">=</span> <span class="fl">0.4</span>, linewidth <span class="op">=</span> <span class="fl">1.2</span>, color <span class="op">=</span> <span class="st">"black"</span>)</span>
+<span id="cb11-146"><a href="#cb11-146" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-147"><a href="#cb11-147" aria-hidden="true" tabindex="-1"></a>  <span class="co"># --- PLOT 2: TRIMMED LOESS (Dipotong Kiri dan Kanan) ---</span></span>
+<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>  plot_clean_trimmed <span class="op">&lt;-</span> base_clean_plot <span class="op">+</span></span>
+<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a>    geom_smooth(data <span class="op">=</span> plot_df <span class="op">%&gt;%</span> <span class="bu">filter</span>(val_age <span class="op">&gt;=</span> dynamic_lower_cutoff <span class="op">&amp;</span> val_age <span class="op">&lt;=</span> dynamic_upper_cutoff), </span>
+<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a>                aes(val_age, val_bmi), method <span class="op">=</span> <span class="st">"loess"</span>, span <span class="op">=</span> <span class="fl">0.9</span>, </span>
+<span id="cb11-151"><a href="#cb11-151" aria-hidden="true" tabindex="-1"></a>                se <span class="op">=</span> FALSE, linewidth <span class="op">=</span> <span class="fl">1.2</span>, color <span class="op">=</span> <span class="st">"black"</span>)</span>
+<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a>  <span class="co"># --- PLOT 3: ZONE PLOT ---</span></span>
+<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a>  zone_lines <span class="op">&lt;-</span> c(<span class="st">"z_m3"</span><span class="op">=</span><span class="st">"dashed"</span>, <span class="st">"z_m2"</span><span class="op">=</span><span class="st">"dashed"</span>, <span class="st">"z_m1"</span><span class="op">=</span><span class="st">"dotted"</span>, <span class="st">"z_0"</span><span class="op">=</span><span class="st">"solid"</span>, <span class="st">"z_p1"</span><span class="op">=</span><span class="st">"dotted"</span>, <span class="st">"z_p2"</span><span class="op">=</span><span class="st">"dashed"</span>, <span class="st">"z_p3"</span><span class="op">=</span><span class="st">"dashed"</span>)</span>
+<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>  zone_sizes <span class="op">&lt;-</span> c(<span class="st">"z_m3"</span><span class="op">=</span><span class="fl">0.6</span>, <span class="st">"z_m2"</span><span class="op">=</span><span class="fl">0.6</span>, <span class="st">"z_m1"</span><span class="op">=</span><span class="fl">0.6</span>, <span class="st">"z_0"</span><span class="op">=</span><span class="fl">1.0</span>, <span class="st">"z_p1"</span><span class="op">=</span><span class="fl">0.6</span>, <span class="st">"z_p2"</span><span class="op">=</span><span class="fl">0.6</span>, <span class="st">"z_p3"</span><span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>  plot_zone <span class="op">&lt;-</span> ggplot() <span class="op">+</span></span>
+<span id="cb11-158"><a href="#cb11-158" aria-hidden="true" tabindex="-1"></a>    geom_ribbon(data <span class="op">=</span> zone_df, aes(age, ymin <span class="op">=</span> ymin, ymax <span class="op">=</span> zm3), fill <span class="op">=</span> <span class="st">"#31688e"</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>) <span class="op">+</span></span>
+<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a>    geom_ribbon(data <span class="op">=</span> zone_df, aes(age, ymin <span class="op">=</span> zm3, ymax <span class="op">=</span> zm2), fill <span class="op">=</span> <span class="st">"#639bb4"</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>) <span class="op">+</span></span>
+<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a>    geom_ribbon(data <span class="op">=</span> zone_df, aes(age, ymin <span class="op">=</span> zm2, ymax <span class="op">=</span> zp1), fill <span class="op">=</span> <span class="st">"#d9d9d9"</span>, alpha <span class="op">=</span> <span class="fl">0.08</span>) <span class="op">+</span></span>
+<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a>    geom_ribbon(data <span class="op">=</span> zone_df, aes(age, ymin <span class="op">=</span> zp1, ymax <span class="op">=</span> zp2), fill <span class="op">=</span> <span class="st">"#e07a5f"</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>) <span class="op">+</span></span>
+<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a>    geom_ribbon(data <span class="op">=</span> zone_df, aes(age, ymin <span class="op">=</span> zp2, ymax <span class="op">=</span> ymax), fill <span class="op">=</span> <span class="st">"#b11226"</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>) <span class="op">+</span></span>
+<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a>    geom_line(data <span class="op">=</span> who_curves_long, aes(age, value, group <span class="op">=</span> curve, linetype <span class="op">=</span> curve, linewidth <span class="op">=</span> curve)) <span class="op">+</span></span>
+<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a>    scale_linetype_manual(values <span class="op">=</span> zone_lines) <span class="op">+</span> scale_linewidth_manual(values <span class="op">=</span> zone_sizes) <span class="op">+</span></span>
+<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a>    guides(linetype <span class="op">=</span> <span class="st">"none"</span>, linewidth <span class="op">=</span> <span class="st">"none"</span>) <span class="op">+</span></span>
+<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a>    shared_layers <span class="op">+</span></span>
+<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a>    geom_smooth(data <span class="op">=</span> plot_df <span class="op">%&gt;%</span> <span class="bu">filter</span>(val_age <span class="op">&gt;=</span> dynamic_lower_cutoff <span class="op">&amp;</span> val_age <span class="op">&lt;=</span> dynamic_upper_cutoff), </span>
+<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a>                aes(val_age, val_bmi), method <span class="op">=</span> <span class="st">"loess"</span>, span <span class="op">=</span> <span class="fl">0.9</span>, se <span class="op">=</span> FALSE, linewidth <span class="op">=</span> <span class="fl">1.2</span>, color <span class="op">=</span> <span class="st">"black"</span>) <span class="op">+</span></span>
+<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a>    labs(title <span class="op">=</span> <span class="st">"WHO BMI-for-Age Growth Chart"</span>)</span>
+<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a>  <span class="co"># --- PLOT 4: BAR PLOT DISTRIBUTION ---</span></span>
+<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a>  urutan_asli <span class="op">&lt;-</span> <span class="im">as</span>.character(unique(cat_table[[category_col]]))</span>
+<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a>  plot_dist <span class="op">&lt;-</span> ggplot(cat_table, aes(x <span class="op">=</span> .data[[category_col]], y <span class="op">=</span> pct, fill <span class="op">=</span> .data[[category_col]])) <span class="op">+</span></span>
+<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a>    geom_col(width <span class="op">=</span> <span class="fl">0.7</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.25</span>) <span class="op">+</span></span>
+<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a>    geom_text(aes(label <span class="op">=</span> sprintf(<span class="st">"</span><span class="sc">%.1f%%</span><span class="st">"</span>, pct)), vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>, size <span class="op">=</span> <span class="dv">5</span>, fontface <span class="op">=</span> <span class="st">"bold"</span>) <span class="op">+</span></span>
+<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a>    scale_fill_manual(values <span class="op">=</span> master_colors) <span class="op">+</span></span>
+<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a>    scale_x_discrete(limits<span class="op">=</span>urutan_asli) <span class="op">+</span></span>
+<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>    scale_y_continuous(labels <span class="op">=</span> scales::label_percent(scale <span class="op">=</span> <span class="dv">1</span>), expand <span class="op">=</span> expansion(mult <span class="op">=</span> c(<span class="dv">0</span>, <span class="fl">0.15</span>))) <span class="op">+</span></span>
+<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a>    theme_minimal(base_size <span class="op">=</span> <span class="dv">18</span>) <span class="op">+</span></span>
+<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a>    theme(</span>
+<span id="cb11-182"><a href="#cb11-182" aria-hidden="true" tabindex="-1"></a>      legend.position <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a>      panel.grid.major.x <span class="op">=</span> element_blank(),</span>
+<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a>      panel.grid.minor <span class="op">=</span> element_blank(),</span>
+<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a>      axis.text <span class="op">=</span> element_text(color <span class="op">=</span> <span class="st">"black"</span>),</span>
+<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a>      axis.line.y <span class="op">=</span> element_line(color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb11-187"><a href="#cb11-187" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb11-188"><a href="#cb11-188" aria-hidden="true" tabindex="-1"></a>    labs(title <span class="op">=</span> NULL, x <span class="op">=</span> NULL, y <span class="op">=</span> <span class="st">"Percentage (%)"</span>)</span>
+<span id="cb11-189"><a href="#cb11-189" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-190"><a href="#cb11-190" aria-hidden="true" tabindex="-1"></a>  <span class="co"># =====================================================================</span></span>
+<span id="cb11-191"><a href="#cb11-191" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 4. EXPORT HASIL</span></span>
+<span id="cb11-192"><a href="#cb11-192" aria-hidden="true" tabindex="-1"></a>  <span class="co"># =====================================================================</span></span>
+<span id="cb11-193"><a href="#cb11-193" aria-hidden="true" tabindex="-1"></a>  <span class="bu">list</span>(</span>
+<span id="cb11-194"><a href="#cb11-194" aria-hidden="true" tabindex="-1"></a>    clean_plot_full <span class="op">=</span> plot_clean_full, </span>
+<span id="cb11-195"><a href="#cb11-195" aria-hidden="true" tabindex="-1"></a>    clean_plot_trimmed <span class="op">=</span> plot_clean_trimmed, </span>
+<span id="cb11-196"><a href="#cb11-196" aria-hidden="true" tabindex="-1"></a>    zone_plot <span class="op">=</span> plot_zone, </span>
+<span id="cb11-197"><a href="#cb11-197" aria-hidden="true" tabindex="-1"></a>    bar_plot <span class="op">=</span> plot_dist,</span>
+<span id="cb11-198"><a href="#cb11-198" aria-hidden="true" tabindex="-1"></a>    calculated_upper_cutoff <span class="op">=</span> dynamic_upper_cutoff,</span>
+<span id="cb11-199"><a href="#cb11-199" aria-hidden="true" tabindex="-1"></a>    calculated_lower_cutoff <span class="op">=</span> dynamic_lower_cutoff</span>
+<span id="cb11-200"><a href="#cb11-200" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-201"><a href="#cb11-201" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="fc775974" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>hasil_plot <span class="op">&lt;-</span> generate_who_charts(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  data <span class="op">=</span> male_results, </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  category_col <span class="op">=</span> <span class="st">"cat_package"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  target_sex <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Menampilkan plot</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>hasil_plot$clean_plot_full</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>hasil_plot$clean_plot_trimmed</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>hasil_plot$bar_plot</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Kasus 2: Tabel data baru dimana nama kolomnya murni bmi dan umur</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co"># hasil_plot &lt;- generate_who_charts(</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># data = dataset_baru, </span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># category_col = "status_gizi",</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># bmi_col = "bmi",          # Tinggal oper nama kolomnya di sini</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># age_col = "umur",         # Dan di sini</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># target_sex = 2</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="male_nutritional_status_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="male_nutritional_status_files/figure-html/cell-13-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="male_nutritional_status_files/figure-html/cell-13-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cc6385e3" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ggsave(<span class="st">'plot/male_growth_chart_full.png'</span>, hasil_plot$clean_plot_full, width <span class="op">=</span> <span class="dv">12</span>, height <span class="op">=</span> <span class="dv">9</span>, dpi<span class="op">=</span><span class="dv">1200</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ggsave(<span class="st">'plot/male_growth_chart_trimmed.png'</span>, hasil_plot$clean_plot_trimmed, width <span class="op">=</span> <span class="dv">12</span>, height <span class="op">=</span> <span class="dv">9</span>, dpi<span class="op">=</span><span class="dv">1200</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ggsave(<span class="st">'plot/male_nutritional_dist_status.png'</span>, hasil_plot$bar_plot, width <span class="op">=</span> <span class="dv">10</span>, height <span class="op">=</span> <span class="dv">9</span>, dpi<span class="op">=</span><span class="dv">1200</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre>`geom_smooth()` using formula = 'y ~ x'
+
+`geom_smooth()` using formula = 'y ~ x'
+</pre>
+</div>
+</div>
+</div>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
