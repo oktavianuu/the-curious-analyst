@@ -126,7 +126,7 @@ Sampel penelitian menunjukkan rerata Z-score IMT menurut umur (IMT/U) sebesar -0
 
 ```{r}
 #| echo: false
-distribusi_status_gizi <- summarize_categorical(female_results, "cat_manual")
+distribusi_status_gizi <- summarize_categorical(female_results, "cat_package")
 
 kable(
   distribusi_status_gizi,
@@ -149,7 +149,7 @@ Distribusi status gizi remaja perempuan menunjukkan bahwa mayoritas sampel (71,9
 
 ![Kurva Pertumbuhan Index Massa Tubuh Terhadap Umur Remaja Perempuan](plot/female_growth_chart_trimmed.png){#fig-kurva-pertumbuhan-female fig-align="center" width=90%}
 
-Garis tren LOESS menunjukkan kemiringan positif yang stabil (_gradual upward slope_), dengan nilai median BMI yang meningkat secara konsisten seiring bertambahnya usia, dimulai dari kisaran angka 20 hingga melampaui 21 pada rentang usia observasi. pola tersebut konsisten sejajar dengan median referensi WHO ($Z=0$). 
+Garis tren LOESS menunjukkan kemiringan positif yang stabil (_gradual upward slope_), dengan nilai median BMI yang meningkat secara konsisten seiring bertambahnya usia. pola tersebut konsisten sejajar dengan median referensi WHO ($Z=0$). 
 
 Garis tren (LOESS) dipotong secara otomatis pada rentang usia 150 hingga 211,2 bulan, yakni titik di mana model mendeteksi adanya eksplosi Standard Error (SE) akibat penipisan kerapatan data. Prosedur ini memastikan bahwa garis tren yang disajikan hanya merepresentasikan area dengan presisi estimasi yang tinggi, sementara seluruh titik data mentah tetap dipertahankan secara utuh untuk memberikan gambaran transparan mengenai distribusi sampel penelitian.
 
@@ -158,7 +158,7 @@ Garis tren (LOESS) dipotong secara otomatis pada rentang usia 150 hingga 211,2 b
 # 1. Compute the scores and categories
 male_results <- calculate_bmi_zscores(data = male_data, target_sex = 1)
 ```
-Statistik deskriptif dari distribusi Z-score sampel remaja laki-laki dirangkum dalam Tabel 1, sedangkan klasifikasi status gizi berdasarkan kriteria WHO disajikan dalam Tabel 2.
+Statistik deskriptif dari distribusi Z-score sampel remaja laki-laki dirangkum dalam Tabel 3, sedangkan klasifikasi status gizi berdasarkan kriteria WHO disajikan dalam Tabel 4.
 ```{r}
 #| echo: false
 z_score_stats <- summarize_continuous(male_results, "bmi_z_package")
@@ -175,7 +175,7 @@ kable(
     latex_options = c("HOLD_position")
   )
 ```
-Analisis menunjukkan rerata Z-score IMT/U sampel sebesar -0.242 (SD: 1.583). Nilai rerata yang mendekati nol ini mengindikasikan keselarasan pusat distribusi pertumbuhan sampel dengan referensi global WHO, walaupun nilai deviasi standar yang tinggi mencerminkan adanya variasi status gizi yang cukup beragam pada remaja laki-laki. Profil distribusi pada @fig-density-curve-male (terlampir pada bagian dokumentasi metodologis dan validasi statistik), distribusi data ini memiliki kemiringan positif (positive skew) yang tipis. Visualisasi kurva tersebut mengonfirmasi secara matematis adanya ekor sebaran ke arah kanan akibat nilai ekstrem sampel yang berkisar dari -5.59 hingga 4.14.
+Hasil analisis menunjukkan rerata Z-score IMT/U sampel sebesar -0.242 (SD: 1.583). Nilai rerata yang mendekati nol ini mengindikasikan keselarasan pusat distribusi pertumbuhan sampel dengan referensi global WHO. Nilai standar deviasi yang tinggi mencerminkan adanya variasi status gizi yang cukup beragam pada remaja laki-laki. Profil distribusi pada @fig-density-curve-male (terlampir pada bagian dokumentasi metodologis dan validasi statistik), distribusi data ini memiliki kemiringan positif (_positive skew_) yang tipis. Visualisasi kurva tersebut mengkonfirmasi secara matematis adanya ekor sebaran ke arah kanan akibat nilai ekstrem sampel yang berkisar dari -5.59 hingga 4.14.
 
 ```{r}
 #| echo: false
@@ -195,7 +195,7 @@ kable(
 
 Distribusi status gizi remaja laki-laki menunjukkan bahwa 63.4% sampel berada dalam kategori normal. Meskipun demikian, terlihat adanya fenomena beban ganda malnutrisi (_double burden of malnutrition_), di mana prevalensi kelebihan gizi sebesar 22.4% dan kekurangan gizi sebesar 13.5%. 
 
-@fig-status-gizi-male menunjukkan sebagian besar sampel memiliki status gizi normal, meskipun prevalensi "gizi lebih" dan "obesitas" (22.4%) secara signifikan lebih tinggi daripada "gizi kurang" dan "gizi buruk"(13.5%).
+@fig-status-gizi-male menunjukkan sebagian besar sampel memiliki status gizi normal, meskipun prevalensi "gizi lebih" dan "obesitas" secara signifikan lebih tinggi daripada "gizi kurang" dan "gizi buruk".
 
 ![Distribusi Status Gizi Remaja Laki-laki](plot/male_nutritional_dist_status.png){#fig-status-gizi-male fig-align="center" width=60%}
 
@@ -208,28 +208,28 @@ Garis tren LOESS menunjukkan pola kenaikan yang gradual pada rentang usia 150 hi
 Garis tren (LOESS) dipotong secara otomatis pada rentang usia 150 hingga 216 bulan, yakni titik di mana model mendeteksi adanya eksplosi Standard Error (SE) akibat penipisan kerapatan data. Prosedur ini memastikan bahwa garis tren yang disajikan hanya merepresentasikan area dengan presisi estimasi yang tinggi, sementara seluruh titik data mentah tetap dipertahankan secara utuh untuk memberikan gambaran transparan mengenai distribusi sampel penelitian.
 
 # Dokumentasi Metodologis dan Validasi Model Statistik
-Tujuan dari bagian ini adalah untuk mendekonstruksi kalkulasi status gizi antropometri menggunakan standar World Health Organization (WHO), serta menyediakan landasan teori bagi peneliti selanjutnya yang ingin mereplikasi metodologi ini.
+Tujuan dari bagian ini adalah untuk mendekonstruksi kalkulasi status gizi antropometri menggunakan standar WHO, serta menyediakan landasan teori bagi peneliti selanjutnya yang ingin mereplikasi metodologi ini.
 
 ## Landasan Matematika Skor Z (Z-Score) LMS
 Kalkulasi pertumbuhan anak standar WHO tidak menggunakan rumus linear sederhana (Standard Score biasa). Hal ini dikarenakan distribusi biologis berat badan dan Indeks Massa Tubuh (IMT) pada populasi normal tidak pernah membentuk kurva __Gauss__ yang simetris sempurna. Secara biologis, massa tubuh memiliki batas bawah absolut (tidak mungkin kurang dari nol atau massa organ vital), namun tidak memiliki batas atas yang pasti. Akibatnya, kurva populasi selalu memanjang ke kanan (_right-skewed_). Untuk mengatasi asimetri ini, WHO mengadopsi Metode LMS yang dikembangkan oleh @cole1992. Metode ini melakukan normalisasi data secara dinamis pada setiap kelompok umur.
 
-Setiap titik usia (bulan) memiliki tiga parameter spesifik yang diekstrak dari tabel standar pertumbuhan (misalnya melalui paket anthroplus):
+Setiap titik usia memiliki tiga parameter spesifik yang diekstrak dari tabel standar pertumbuhan:
 
-- **L (_Box-Cox Power Transformation_)**: Parameter koreksi kecondongan (skewness). Ini bertindak seperti gaya regangan matematika yang "menarik" kurva asimetris menjadi simetris sebelum diukur.
-- (_Median_)**: Nilai tengah absolut (kuantil ke-50) dari populasi referensi sehat pada usia tersebut.
+- **L (_Box-Cox Power Transformation_)**: Parameter koreksi kemiringan (_skewness_). Bertindak seperti gaya regangan matematika yang "menarik" kurva asimetris menjadi simetris sebelum diukur.
+- **M (_Median_)**: Nilai tengah absolut (kuantil ke-50) dari populasi referensi sehat pada usia tersebut.
 - **S (_Coefficient of Variation_)**: Ukuran dispersi relatif yang menunjukkan seberapa lebar variasi populasi pada usia tersebut.
 
 Formulasi matematika untuk menghitung Skor Z dari nilai BMI empiris seorang individu adalah sebagai berikut:
 $$Z = \begin{cases} \frac{\ln\left(\frac{\text{BMI}}{M}\right)}{S}, & \text{jika } L = 0 \\ \frac{\left(\frac{\text{BMI}}{M}\right)^L - 1}{L \times S}, & \text{jika } L \neq 0 \end{cases}$$
 
-Secara teori, jika nilai $L = 1$ (distribusi sudah simetris sempurna), rumus di atas akan runtuh kembali menjadi rumus Skor Z klasik: $Z = \frac{\text{BMI} - M}{M \times S}$. Namun, pada data BMI anak dan remaja, nilai $L$ hampir selalu berupa pecahan negatif. Transformasi pangkat (power transformation) ini secara otomatis mendistorsi skala jarak. Tujuannya adalah memastikan bahwa anak yang sangat kurus atau sangat obesitas dievaluasi menggunakan jarak proporsional terhadap median, mencegah terjadinya bias over-estimasi pada klasifikasi klinis ekstrem [@who_multicentre_growth_reference_study_group_who_2006]
+Secara teori, jika nilai $L = 1$ (distribusi sudah simetris sempurna), rumus di atas akan runtuh kembali menjadi rumus Skor Z klasik: $Z = \frac{\text{BMI} - M}{M \times S}$. Namun, pada data BMI anak dan remaja, nilai $L$ hampir selalu berupa pecahan negatif. Transformasi pangkat (power transformation) ini secara otomatis mendistorsi skala jarak.Tujuannya adalah memastikan bahwa anak yang sangat kurus atau sangat obesitas dievaluasi menggunakan jarak proporsional terhadap median, mencegah terjadinya bias over-estimasi pada klasifikasi status gizi ekstrem[@who_multicentre_growth_reference_study_group_who_2006].
 
 ## Dekonstruksi Statistik Deskriptif Kontinu
 ### Rata-rata (_Mean_) vs. Median dalam Deteksi Kemiringan (_Skewness_)
 Rata-rata ($\bar{x}$) merupakan ukuran pemusatan data yang umum, namun sangat sensitif terhadap nilai ekstrem (_outlier_). Sebaliknya, median memiliki sifat robust (_resisten_) karena tidak dipengaruhi oleh nilai ekstrem tersebut.
 $$\text{Mean} (\bar{x}) = \frac{\sum_{i=1}^{n} x_i}{n}$$
 
-Nilai $\text{Mean} > \text{Median}$ ($-0.103 > -0.190$) pada sampel perempuan mengkonfirmasi bahwa distribusi data miring ke kanan (_right-skewed_). Nilai Mean terdistorsi ke atas akibat sensitivitasnya terhadap outlier ber-Z-score tinggi (Max = 3.99). Sementara itu, nilai Median menunjukkan bahwa mayoritas populasi remaja perempuan sebenarnya berada di rentang nilai yang lebih rendah dan sehat karena indikator ini tidak dipengaruhi oleh nilai ekstrem tersebut.
+Nilai $\text{Mean} > \text{Median}$ ($-0.103 > -0.190$) pada sampel perempuan mengkonfirmasi bahwa distribusi data miring ke kanan (_right-skewed_). Nilai Mean terdistorsi ke atas akibat sensitivitasnya terhadap outlier ber-Z-score tinggi (Max = 3.99). Sementara itu, nilai Median menunjukkan bahwa mayoritas populasi remaja perempuan sebenarnya berada di rentang nilai yang lebih rendah dan sehat karena indikator ini tidak dipengaruhi oleh nilai ekstrem tersebut. @fig-density-curve-female dan @fig-density-curve-male menyajikan visualisasi distribusi Z-score IMT yang disandingkan dengan kurva distribusi normal sebagai referensi, masing-masing untuk sampel remaja perempuan dan remaja laki-laki
 
 ![Distribusi Densitas Empiris Z-Score IMT Remaja Perempuan](plot/female_density_curve.png){#fig-density-curve-female fig-align="center" width=50%}
 
@@ -246,9 +246,9 @@ Populasi referensi WHO secara matematis dikunci untuk memiliki nilai $\text{SD} 
 Rentang absolut ($\text{Maximum} - \text{Minimum}$) sangat rentan terhadap noise karena ia semata-mata ditentukan oleh dua individu paling ekstrem di ujung spektrum populasi. Untuk mengukur konsentrasi kesehatan mayoritas tanpa distorsi pencilan, kita mengevaluasi Rentang Antarkuartil ($\text{IQR} = Q_3 - Q_1$). Nilai IQR menangkap secara presisi 50% massa populasi jangkar di bagian tengah kurva, memberikan gambaran profil gizi "individu tipikal" dalam sampel tersebut.
 
 ## Pemotongan Kurva LOESS
-Ketika data potong-lintang mencapai batas usia atas (211.2), sampel secara alami menipis. Pada ujung ekstrem ini, algoritma LOESS kehilangan jangkar data. Karena "jendela" regresi di ujung grafik bersifat asimetris (hanya bisa melihat data masa lalu, tidak ada data masa depan), daya ungkit statistik dari satu atau dua sampel pencilan meningkat tajam secara eksponensial [@hastie_elements_2009]. Jika data terakhir adalah partisipan yang sangat kurus, LOESS akan bereaksi berlebihan dan "mematahkan" kurva ke bawah, menciptakan ilusi matematis seolah-olah terjadi wabah penurunan berat badan massal pada remaja akhir.
+Data pada ujung tepi (batas bawah dan batas atas) usia pada sampel penelitian jumlahnya sedikit. Pada ujung ekstrem ini, algoritma LOESS kehilangan jangkar data. Karena "jendela" regresi di ujung grafik bersifat asimetris (hanya bisa melihat data masa lalu, tidak ada data masa depan), daya ungkit statistik dari satu atau dua sampel pencilan meningkat tajam secara eksponensial [@hastie_elements_2009]. Jika data terakhir adalah partisipan yang sangat kurus, LOESS akan bereaksi berlebihan dan "mematahkan" kurva ke bawah, menciptakan ilusi matematis seolah-olah terjadi wabah penurunan berat badan massal pada remaja akhir.
 
-Tanpa pemotongan, garis tren akan terus ditarik hingga titik data terakhir. Jika data terakhir adalah *outlier*, garis tersebut akan mengikuti *outlier* tersebut. Pembaca akan melihat grafik yang menukik tajam dan menyimpulkan bahwa secara klinis, remaja akhir mengalami penurunan berat badan drastis. Padahal, itu adalah kesimpulan yang salah. Pemotongan ini mencegah kesimpulan yang keliru. 
+Tanpa pemotongan, garis tren akan terus ditarik hingga titik data terakhir. Jika data terakhir adalah pencilan (*outlier*), maka garis akan mengikuti *outlier* tersebut. Pembaca akan melihat grafik yang menukik tajam dan menyimpulkan bahwa secara klinis, remaja akhir mengalami penurunan berat badan drastis. Padahal, itu adalah kesimpulan yang salah. Pemotongan ini mencegah kesimpulan yang keliru. 
 
 ### Metode Pemotongan Kurva
 Tidak seperti regresi linear global, LOESS bekerja secara lokal di setiap titik $x$ (usia). Model mengestimasi nilai $y$ (BMI) dengan memberikan bobot lebih besar pada data yang dekat dengan titik $x$. Varians dari prediksi tersebut ($\text{Var}(\hat{y}|x)$) dinyatakan sebagai:

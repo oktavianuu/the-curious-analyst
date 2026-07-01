@@ -1,0 +1,151 @@
+---
+title: "Analisis Keterampilan Berpikir Kritis Siswa"
+author:
+  - name: >
+      `Okta \\[0.15cm] {\footnotesize "the curious mind"}`{=latex}
+date: today
+date-format: "DD MMMM YYYY"
+format: 
+  pdf:
+    fig-format: retina
+    fig-pos: "H"
+    pdf-engine: xelatex
+    number-sections: true
+    geometry: 
+      - top=2.5cm
+      - bottom=2.5cm
+      - left=3cm
+      - right=2.5cm 
+lang: id
+csl: apa.csl
+link-citations: true
+header-includes:
+  - \usepackage[singlelinecheck=false]{caption}
+  - \captionsetup[figure]{justification=centering}
+  - \usepackage{etoolbox}
+  - \makeatletter\patchcmd{\@maketitle}{\@date}{\footnotesize\@date}{}{}\makeatother
+  - \usepackage{xcolor}
+  - \definecolor{KotakMaroon}{RGB}{128, 0, 0}
+  - \definecolor{KotakHijau}{RGB}{34, 139, 34}
+  # Penyesuaian: Kotak Maroon untuk Gambar/Tabel, Kotak Hijau untuk Sitasi
+  - \AtBeginDocument{\hypersetup{
+      colorlinks=false, 
+      linkbordercolor=KotakMaroon, 
+      citebordercolor=KotakHijau, 
+      pdfborder={0 0 1}
+    }}
+bibliography: citations.bib
+execute: 
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+library(eRm) # digunakan untuk pemodelan rasch
+library(dplyr) # dignakan untuk mengubah struktur data
+library(readxl) # digunakan untuk membaca file excel
+library(ggplot2) # digunakan untuk membuat grafik
+library(tidyr) # digunakan untuk merapikan data
+library(knitr)
+
+source("fungsi/plotICC.R")
+source("fungsi/wrightmap.R")
+source("fungsi/treshold.R")
+source("fungsi/rasch_item_diagnostics.R")
+source("fungsi/tabel_distribusi_lrt.R")
+```
+
+# METODE
+## Analisis Rasch
+Analisis dilakukan menggunakan Partial Credit Model (PCM). Pemilihan PCM didasari oleh data jawaban instrumen penelitian yang bersifat politomi dengan rentang skor 0-4 [@masters_rasch_1982]. Selain itu, PCM dipilih karena skala nilai tidak sama antar soal dan tingkatan nilai antar kategori respon tidak dianggap sama nilainya [@debelak_introduction_2022; @masters_rasch_1982]. Untuk menguji asumsi-asumsi dasar pemodelan Rasch, prosedur-prosedur berikut dilakukan. Pertama, dilakukan uji unidemensionalitas menggunakan uji 
+
+# HASIL
+
+```{r}
+data <- read_excel("data.xlsx") 
+model_pcm <- PCM(data)
+```
+## Validitas dan Reliabilitas Instrumen (Kualitas Soal)
+### Uji Unidimensionalitas
+
+```{r}
+MLoef(model_pcm, splitcr = "mean")
+```
+
+### Independensi Lokal (Local Item Independence)
+
+```{r}
+# 1. HITUNG PARAMETER SISWA (WAJIB di eRm sebelum mencari residual)
+estimasi_person <- person.parameter(model_pcm)
+
+# 2. AMBIL RESIDUALNYA
+# Fungsi ini dijalankan pada objek estimasi_person, bukan langsung pada model pcm
+objek_res <- residuals(estimasi_person)
+
+# 3. UBAH MENJADI MATRIKS NUMERIK
+# Langkah ini penting agar struktur custom dari eRm berubah menjadi matriks angka murni
+matriks_numerik <- as.matrix(objek_res)
+
+# 4. HITUNG KORELASI RESIDUAL
+cor_res <- cor(matriks_numerik, use = "pairwise.complete.obs")
+
+# 5. TAMPILKAN HASILNYA
+print(round(cor_res, 2))
+```
+### Item Fit (Kesesuaian Butir Soal)
+
+```{r}
+itemfit(person.parameter(model_pcm))
+```
+
+### Item Reliability & Separation Index
+
+```{r}
+# reliabilitas item
+# eRm menyimpan parameter item di $betapar sebagai nilau easiness. 
+# mengalikannya dengan -1 mengubahnya menjadi kesukaran.
+item_difficulties <- -1 * model_pcm$betapar
+
+# Mengekstrak nilai SE masing2 parameter item
+item_se <- model_pcm$se.beta
+
+# menghitung varians item dan mean error variance
+observed_item_var   <- var(item_difficulties)
+mean_item_error_var <- mean(item_se^2)
+
+# mengaplikasikan reliabilitas item rasch: (Observed Var - Error Var) / Observed Var
+item_reliability <- (observed_item_var - mean_item_error_var) / observed_item_var
+
+# menampilkan hasil
+cat("Item Reliability (Separation)  : ", round(item_reliability, 3), "\n")
+
+```
+
+### Fungsi Kategori Skor (Threshold/Category Functioning)
+
+```{r}
+thresholds(model_pcm)
+```
+
+## Profil Kemampuan Siswa
+### Person Reliability & Separation Index
+
+```{r}
+# reliabilitas person
+p_rel_obj   <- SepRel(estimasi_person)
+person_reliability <- p_rel_obj$sep.rel
+
+cat("Person Reliability (Separation)  : ", round(person_reliability, 3), "\n")
+```
+### Person-Item Map (_Wright Map_)
+
+![Treshold Map](plot/treshold_map.png){#treshold-map fig-align="center" width=100%}
+
+###  Person Measure (Skor Logit Kemampuan Siswa)
+
+```{r}
+summary(estimasi_person)
+```
+
+# Daftar Pustaka

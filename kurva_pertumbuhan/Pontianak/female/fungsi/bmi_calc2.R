@@ -6,17 +6,24 @@ library(anthroplus)
 # 1. HELPER FUNCTIONS (Internal Logic)
 # =====================================================
 
-# Generates ordinal categories for z-scores
+# Fungsi Kategorisasi Z-score Standar Kemenkes RI/WHO 2007 (Usia 5-19 Tahun)
 categorize_bmi_z <- function(z) {
-  status <- case_when(
-    is.na(z) ~ NA_character_,
-    z < -3   ~ "Gizi Buruk",
-    z < -2   ~ "Gizi Kurang",
-    z <= 1   ~ "Gizi Normal",
-    z <= 2   ~ "Gizi Lebih",
-    TRUE     ~ "Obesitas"
+  status <- dplyr::case_when(
+    # 1. Karantina data anomali di awal (NA, NaN, Inf)
+    is.na(z) | is.nan(z) | is.infinite(z) ~ NA_character_,
+    
+    # 2. Evaluasi berjenjang (Top-Down)
+    z < -3.0  ~ "Gizi Buruk",
+    z < -2.0  ~ "Gizi Kurang",
+    z <= 1.0  ~ "Gizi Normal",
+    z <= 2.0  ~ "Gizi Lebih",
+    z > 2.0   ~ "Obesitas",
+    
+    # 3. Safety net absolut (jika ada angka yang lolos dari kondisi di atas)
+    TRUE      ~ NA_character_ 
   )
   
+  # Kunci dalam struktur ordinal (bertingkat)
   factor(
     status, 
     levels = c("Gizi Buruk", "Gizi Kurang", "Gizi Normal", "Gizi Lebih", "Obesitas"),
